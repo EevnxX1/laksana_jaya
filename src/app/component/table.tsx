@@ -1,15 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
-import clsx from "clsx";
+
 
 interface TableOuput {
     dataTh: string[];
     dataTd: (string | React.ReactNode)[][];
 }
 
-export function Table({dataTh, dataTd, ...rest}: TableOuput) {
+export function Table({dataTh, dataTd}: TableOuput) {
     return(
         <div className="bg-white p-2">
                 <table className="w-full text-center bg-white text-black">

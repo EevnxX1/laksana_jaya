@@ -8,11 +8,11 @@ interface TabelUi {
     children: React.ReactNode;
 }
 
-export default function TabelBukuKasKecil({children}:TabelUi) {
+export default function TabelBukuKasBesar({children}:TabelUi) {
     return(
         <section className="relative mx-auto w-[91vw] rounded-xl bg-white/20 px-8 py-8">
         <div className="text-white mb-5">
-            <h1 className="font-bold text-2xl mb-3">Buku Kas Kecil</h1>
+            <h1 className="font-bold text-2xl mb-3">Buku Kas Besar</h1>
             <div className="flex justify-between">
                 <form action="" className="flex space-x-5">
                     <div className="flex flex-col">
@@ -22,8 +22,8 @@ export default function TabelBukuKasKecil({children}:TabelUi) {
                     <button type="submit" className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"><span className="mr-1">Cari</span> <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4"/></button>
                 </form>
                 <div className="flex gap-x-5">
-                    <a href="/user/admin/buku_kas_kecil/uang_masuk" className="h-fit self-end"><button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"><FontAwesomeIcon icon={faPrint} className="w-5"/><span className="ml-1">Uang Masuk</span></button></a>
-                    <a href="/user/admin/buku_kas_kecil/uang_keluar" className="h-fit self-end"><button className="flex items-center cursor-pointer px-3 py-1 bg-[#FF3535] rounded-lg text-gray-700 font-medium"><FontAwesomeIcon icon={faPrint} className="w-5"/><span className="ml-1">Uang Keluar</span></button></a>
+                    <a href="/user/direktur/buku_kas_besar/uang_masuk" className="h-fit self-end"><button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"><FontAwesomeIcon icon={faPrint} className="w-5"/><span className="ml-1">Uang Masuk</span></button></a>
+                    <a href="/user/direktur/buku_kas_besar/uang_keluar" className="h-fit self-end"><button className="flex items-center cursor-pointer px-3 py-1 bg-[#FF3535] rounded-lg text-gray-700 font-medium"><FontAwesomeIcon icon={faPrint} className="w-5"/><span className="ml-1">Uang Keluar</span></button></a>
                 </div>
             </div>
         </div>

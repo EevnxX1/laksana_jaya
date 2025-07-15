@@ -1,13 +1,13 @@
-interface FormBkk extends React.FormHTMLAttributes<HTMLFormElement>{
+interface FormBkb extends React.FormHTMLAttributes<HTMLFormElement>{
     children: React.ReactNode;
 }
 
-export default function FormBkkMasuk({children, ...rest}:FormBkk) {
+export default function FormBkbMasuk({children, ...rest}:FormBkb) {
     return(
     <section className="relative w-[91vw] h-[80vh] min-[1100px]:h-auto mx-auto rounded-xl bg-white/20 px-14 py-14 min-[1100px]:px-28">
-        <h1 className="font-bold text-white text-2xl mb-6">Form Transaksi</h1>
+        <h1 className="font-bold text-white text-2xl mb-10">Form Transaksi</h1>
         <form {...rest} className="flex flex-col items-end gap-y-10">
-            <div className="flex flex-wrap justify-between space-y-5 text-white w-full">
+            <div className="flex flex-wrap justify-between space-y-8 text-white w-full">
                 {children}
             </div>
             <div className="w-[86%] min-[980px]:w-[84%] min-[1300px]:w-[88%] min-[1515px]:w-[90%] ml-[120px] border border-white"></div>

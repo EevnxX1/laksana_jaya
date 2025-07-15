@@ -1,96 +1,97 @@
-'use client';
-import { useEffect, useState } from "react";
-import TabelBukuKasKecil from "@/app/ui/admin/tbl_bkk";
+"use client";
+import TabelBukuKasKecil from "@/app/ui/admin/buku_kas_kecil/tbl_bkk";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-interface BukuKasKecil {
-  id: number;
-  tanggal: string;
-  uraian: string;
-  debit: string;
-  kredit: string;
-  saldo: string;
-}
-
 export default function page() {
-    const [data, setData] = useState<BukuKasKecil[]>([]);
+  const dataTh = [
+    "",
+    "No",
+    "Tanggal",
+    "Uraian",
+    "Instansi",
+    "Pekerjaan",
+    "Debit",
+    "Kredit",
+    "Saldo",
+    "Action",
+  ];
 
-    useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/bkk') // endpoint dari Laravel
-        .then((res) => res.json())
-        .then(setData)
-        .catch((err) => console.error(err));
-    }, []);
+  const dataTd = [
+    [
+      <div className="flex justify-center px-2">
+        <input type="checkbox" className="w-4 h-4" />
+      </div>,
+      "1",
+      "01/06/2025",
+      "Fotocopy Dokumen Disnaker",
+      "Disnaker",
+      "Mebel",
+      "",
+      "Rp. 15.000.000",
+      "Rp. 15.000.000",
+      <div className="flex justify-center">
+        <Link href={""} className={"text-green-800"}>
+          <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        </Link>
+        <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
+        <Link href={""} className={"text-red-800"}>
+          <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+        </Link>
+      </div>,
+    ],
+    [
+      <div className="flex justify-center px-2">
+        <input type="checkbox" className="w-4 h-4" />
+      </div>,
+      "1",
+      "01/06/2025",
+      "Fotocopy Dokumen Disnaker",
+      "Disnaker",
+      "Mebel",
+      "",
+      "Rp. 15.000.000",
+      "Rp. 15.000.000",
+      <div className="flex justify-center">
+        <Link href={""} className={"text-green-800"}>
+          <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        </Link>
+        <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
+        <Link href={""} className={"text-red-800"}>
+          <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+        </Link>
+      </div>,
+    ],
+    [
+      <div className="flex justify-center px-2">
+        <input type="checkbox" className="w-4 h-4" />
+      </div>,
+      "1",
+      "01/06/2025",
+      "Fotocopy Dokumen Disnaker",
+      "Disnaker",
+      "Mebel",
+      "",
+      "Rp. 15.000.000",
+      "Rp. 15.000.000",
+      <div className="flex justify-center">
+        <Link href={""} className={"text-green-800"}>
+          <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        </Link>
+        <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
+        <Link href={""} className={"text-red-800"}>
+          <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+        </Link>
+      </div>,
+    ],
+  ];
 
-    const dataTh = 
-        [
-            'No',
-            'Tanggal',
-            'Uraian',
-            'Debit',
-            'Kredit',
-            'Saldo',
-            'Action',
-        ]
-    
-    const dataTd = data.map((row, index) => [
-        index + 1,
-        row.tanggal,
-        row.uraian,
-        row.debit,
-        row.kredit,
-        row.saldo,
-        <div className="flex justify-center">
-            <Link
-            href={''}
-            className={'text-green-800'}
-            >
-                <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
-            </Link>
-            <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
-            <Link
-            href={''}
-            className={'text-red-800'}
-            >
-                <FontAwesomeIcon icon={faCircleXmark} className="w-5"/>
-            </Link>
-        </div>
-    ])
-    //     const dataTd = [
-    //         [
-    //             "1", 
-    //             "12/4/2025", 
-    //             "Tf buku kas kecil", 
-    //             "-", 
-    //             "Rp.158.000.000", 
-    //             "Rp.556.140.000",
-    //             <div className="flex">
-    //                  <Link
-    //                 href={''}
-    //                 className={'text-green-800'}
-    //                 >
-    //                     <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
-    //                 </Link>
-    //                 <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
-    //                 <Link
-    //                 href={''}
-    //                 className={'text-red-800'}
-    //                 >
-    //                     <FontAwesomeIcon icon={faCircleXmark} className="w-5"/>
-    //                 </Link>
-    //             </div>
-    //         ],
-    //   ]
-    return(
-        <TabelBukuKasKecil>
-            <Table
-            dataTh={dataTh}
-            dataTd={dataTd}
-            />
-        </TabelBukuKasKecil>
-    );
+  return (
+    <TabelBukuKasKecil>
+      <Table dataTh={dataTh} dataTd={dataTd} />
+    </TabelBukuKasKecil>
+  );
 }

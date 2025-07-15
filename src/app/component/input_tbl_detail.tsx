@@ -8,7 +8,7 @@ interface InputForm extends React.InputHTMLAttributes<HTMLInputElement> {
   classPage?: string;
 }
 
-export function InputTbl({
+export function InputTblDetail({
   children,
   classLabel,
   classInput,
@@ -17,23 +17,13 @@ export function InputTbl({
 }: InputForm) {
   return (
     <div
-      className={clsx(
-        "flex items-center w-[38vw] justify-between",
-        // responsive max=1400px
-        "max-[1600px]:w-[35vw]",
-        // responsive
-
-        // resoponsive max=1050px
-        "max-[1050px]:w-[36vw]",
-        //responsive
-        classPage
-      )}
+      className={clsx("flex items-center w-full justify-between", classPage)}
     >
       <label
         className={clsx(
-          "text-lg",
+          "text-base",
           // responsive max=1400px
-          "max-[1400px]:text-sm max-[1400px]:w-[100px]",
+          //   "max-[1400px]:w-[100px]",
           // resposive
           classLabel
         )}
@@ -43,18 +33,18 @@ export function InputTbl({
       <input
         {...rest}
         className={clsx(
-          "bg-white/15 w-[70%] px-4 py-[6px] rounded-lg",
+          "bg-white/15 w-[70%] px-4 py-[6px] rounded-lg h-[42px]",
           // responsive min=1400px
-          "min-[1400px]:h-[45px]",
+          //   "min-[1400px]:h-[45px]",
           // responsive
 
           // responsive min=1150px
-          "min-[1150px]:h-[40px]",
+          //   "min-[1150px]:h-[40px]",
           // responsive
 
           // resoponsive max=1050px
-          "max-[1050px]:w-[65%]",
-          "max-[1050px]:h-[43px]",
+          //   "max-[1050px]:w-[65%]",
+          //   "max-[1050px]:h-[43px]",
           //responsive
 
           classInput
