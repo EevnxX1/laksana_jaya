@@ -2,13 +2,13 @@ interface FormBkb extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
 }
 
-export default function FormTambahData({ children, ...rest }: FormBkb) {
+export default function FormBkkKantor({ children, ...rest }: FormBkb) {
   return (
     <section className="relative w-[91vw] h-[80vh] min-[1100px]:h-auto mx-auto rounded-xl bg-white/20 px-14 py-14 min-[1100px]:px-28">
       <h1 className="font-bold text-white text-2xl mb-10">
-        BUKU PROYEK - BARANG
+        Form Buku Kas Kecil Kantor
       </h1>
-      <form {...rest} className="flex flex-col items-end gap-y-10">
+      <form {...rest} className="flex flex-col items-end gap-y-8">
         <div className="flex flex-wrap justify-between text-white w-full">
           {children}
         </div>
@@ -18,7 +18,7 @@ export default function FormTambahData({ children, ...rest }: FormBkb) {
           className="ml-[120px] self-start cursor-pointer w-[200px] h-[45px] bg-[#9EFF66] rounded-lg text-gray-700 font-semibold"
         >
           <i className="fa-solid fa-folder-plus"></i>
-          <span className="ml-1">Tambah Barang</span>
+          <span className="ml-1">Simpan Data</span>
         </button>
       </form>
     </section>

@@ -1,13 +1,14 @@
-interface FormBkb extends React.FormHTMLAttributes<HTMLFormElement> {
+interface UiFormTambahBarang extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
 }
 
-export default function FormTambahData({ children, ...rest }: FormBkb) {
+export default function TambahBarang({
+  children,
+  ...rest
+}: UiFormTambahBarang) {
   return (
-    <section className="relative w-[91vw] h-[80vh] min-[1100px]:h-auto mx-auto rounded-xl bg-white/20 px-14 py-14 min-[1100px]:px-28">
-      <h1 className="font-bold text-white text-2xl mb-10">
-        BUKU PROYEK - BARANG
-      </h1>
+    <section className="relative mx-auto w-[91vw] rounded-xl bg-white/20 px-8 py-8">
+      <h1 className="text-2xl font-semibold mb-5">Masukkan Barang DPA</h1>
       <form {...rest} className="flex flex-col items-end gap-y-10">
         <div className="flex flex-wrap justify-between text-white w-full">
           {children}
@@ -18,7 +19,7 @@ export default function FormTambahData({ children, ...rest }: FormBkb) {
           className="ml-[120px] self-start cursor-pointer w-[200px] h-[45px] bg-[#9EFF66] rounded-lg text-gray-700 font-semibold"
         >
           <i className="fa-solid fa-folder-plus"></i>
-          <span className="ml-1">Tambah Barang</span>
+          <span className="ml-1">+ Tambah Barang</span>
         </button>
       </form>
     </section>

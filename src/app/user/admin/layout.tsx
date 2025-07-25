@@ -26,9 +26,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href={"/user/admin/buku_kas_kecil"}>Buku Kas Kecil</Link>
             </li>
             <li>
-              <Link
-                href={"/user/admin/buku_proyek"}
-                className="flex items-center"
+              <input type="checkbox" id="navbar-down" className="peer hidden" />
+              <label
+                htmlFor="navbar-down"
+                className="flex items-center cursor-pointer select-none"
               >
                 Buku Proyek
                 <Image
@@ -38,10 +39,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   alt="dropdown"
                   className="w-[17px] h-[12px] ml-[6px]"
                 ></Image>
-              </Link>
-              <div className="hidden">
-                <a href="">Pengadaan Barang</a>
-                <a href="">Pengadaan Jasa</a>
+              </label>
+              <div className="hidden peer-checked:flex flex-col absolute z-50 bg-white text-black">
+                <Link
+                  href={"/user/admin/buku_kantor"}
+                  className="px-5 py-2 hover:bg-black hover:text-white"
+                >
+                  Buku Kantor
+                </Link>
+                <Link
+                  href={"/user/admin/buku_proyek"}
+                  className="px-5 py-2 hover:bg-black hover:text-white"
+                >
+                  Buku Proyek Barang
+                </Link>
+                <Link
+                  href={"/user/admin/buku_proyek_j"}
+                  className="px-5 py-2 hover:bg-black hover:text-white"
+                >
+                  Buku Proyek Jasa
+                </Link>
               </div>
             </li>
           </ul>
