@@ -8,7 +8,6 @@ import {
   TabelProyekDetail1,
   TabelProyekDetail2,
   LinkImageProyekDetail,
-  LinkAddBarang,
   LinkAddRekening,
   JudulPage,
 } from "@/app/user/admin/buku_proyek/detail/page";
@@ -24,8 +23,7 @@ export default function TabelBukuProyekDetail() {
       <InputTabelProyekDetail></InputTabelProyekDetail>
       <div className="mt-10 flex flex-col gap-y-5 mb-10">
         <h1 className="text-2xl font-semibold">TABLE PEKERJAAN - NILAI PAGU</h1>
-        <div className="flex gap-x-7">
-          <LinkAddBarang />
+        <div className="flex">
           <LinkAddRekening />
         </div>
         <TabelProyekDetail1></TabelProyekDetail1>

@@ -159,6 +159,7 @@ export function InputTabelProyekDetail() {
 
 interface TabelBarangDpa {
   id: number;
+  id_kdrekening: number;
   nama_barang: string;
   spesifikasi: string;
   vol: string;
@@ -202,70 +203,128 @@ export function TabelProyekDetail1() {
     console.log(operasi);
   }, [data]); // tambahkan dependency jika `data` berasal dari state
 
-  const dataTh = [
-    "No",
-    "Nama Barang",
-    "Spesifikasi",
-    "Vol",
-    "Satuan",
-    "Harga Satuan",
-    "Harga Total",
-    "Action",
-  ];
-
-  const dataRows = data2.map((row, index) => [
-    `${row.no_rekening} ${row.ket}`,
-    <div className="flex justify-center">
-      <Link href={""} className={"text-red-800"}>
-        <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
-      </Link>
-    </div>,
-  ]);
-
-  const dataTd = data.map((row, index) => [
-    index + 1,
-    row.nama_barang,
-    row.spesifikasi,
-    row.vol,
-    row.satuan,
-    "Rp." + row.harga_satuan,
-    "Rp." + row.harga_total,
-    <div className="flex justify-center">
-      <button
-        onClick={() => {
-          const konfirmasi = confirm("Yakin ingin hapus?");
-          if (konfirmasi) {
-            fetch(`http://127.0.0.1:8000/api/barangdpa/${row.id}`, {
-              method: "DELETE",
-            })
-              .then((res) => {
-                if (!res.ok) throw new Error("Gagal hapus");
-                toast.success("Data Barang Berhasil Dihapus");
-
-                // Hapus data dari state agar tabel update
-                setData((prev) => prev.filter((item) => item.id !== row.id));
-              })
-              .catch(() => {
-                toast.error("Terjadi kesalahan saat menghapus");
-              });
-          }
-        }}
-        className={"text-red-800 cursor-pointer"}
-      >
-        <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
-      </button>
-    </div>,
-  ]);
   return (
-    <TableDetail
-      dataRows={dataRows}
-      dataTd={dataTd}
-      dataTh={dataTh}
-      classThTd="px-6 text-justify"
-      classTotal="pr-5"
-      source="total"
-      dataTotal={"Rp." + total}
-    />
+    <table className="w-full text-center bg-white text-black">
+      <thead>
+        <tr className="shadow-xl">
+          <th className={"pb-2 py-2 w-[50px]"}>No</th>
+          <th className={"pb-2 py-2"}>Nama Barang</th>
+          <th className={"pb-2 py-2"}>Spesifikasi</th>
+          <th className={"pb-2 py-2"}>Vol</th>
+          <th className={"pb-2 py-2"}>Satuan</th>
+          <th className={"pb-2 py-2"}>Harga Satuan</th>
+          <th className={"pb-2 py-2"}>Harga Total</th>
+          <th className={"pb-2 py-2"}>Action</th>
+        </tr>
+      </thead>
+      {data2.map((kredit, ikredit) => (
+        <tbody>
+          <tr className="border-b-1 border-gray-400">
+            <th colSpan={7} className="text-start pl-10 px-5">
+              Kode Rekening: {kredit.no_rekening}
+            </th>
+            <th className="text-start py-4 px-5">
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    const konfirmasi = confirm("Yakin ingin hapus?");
+                    if (konfirmasi) {
+                      fetch(
+                        `http://127.0.0.1:8000/api/kdrekening/${kredit.id}`,
+                        {
+                          method: "DELETE",
+                        }
+                      )
+                        .then((res) => {
+                          if (!res.ok) throw new Error("Gagal hapus");
+                          toast.success("Kode Rekening Berhasil Dihapus");
+
+                          // Hapus data dari state agar tabel update
+                          setData2((prev) =>
+                            prev.filter((item) => item.id !== kredit.id)
+                          );
+                        })
+                        .catch(() => {
+                          toast.error("Terjadi kesalahan saat menghapus");
+                        });
+                    }
+                  }}
+                  className={"text-red-800 cursor-pointer"}
+                >
+                  <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+                </button>
+              </div>
+            </th>
+          </tr>
+          {data.map((barang, ibarang) => [
+            barang.id_kdrekening == kredit.id ? (
+              <tr className="border-b-1 border-gray-400">
+                <td className={"py-4"}>{ibarang + 1}</td>
+                <td className={"py-4"}>{barang.nama_barang}</td>
+                <td className={"py-4"}>{barang.spesifikasi}</td>
+                <td className={"py-4"}>{barang.vol}</td>
+                <td className={"py-4"}>{barang.satuan}</td>
+                <td className={"py-4"}>Rp.{barang.harga_satuan}</td>
+                <td className={"py-4"}>Rp.{barang.harga_total}</td>
+                <td className={"py-4"}>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => {
+                        const konfirmasi = confirm("Yakin ingin hapus?");
+                        if (konfirmasi) {
+                          fetch(
+                            `http://127.0.0.1:8000/api/barangdpa/${barang.id}`,
+                            {
+                              method: "DELETE",
+                            }
+                          )
+                            .then((res) => {
+                              if (!res.ok) throw new Error("Gagal hapus");
+                              toast.success("Data Barang Berhasil Dihapus");
+
+                              // Hapus data dari state agar tabel update
+                              setData((prev) =>
+                                prev.filter((item) => item.id !== barang.id)
+                              );
+                            })
+                            .catch(() => {
+                              toast.error("Terjadi kesalahan saat menghapus");
+                            });
+                        }
+                      }}
+                      className={"text-red-800 cursor-pointer"}
+                    >
+                      <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              <tr className="border-b-1 border-gray-400"></tr>
+            ),
+          ])}
+          <tr className="border-b-1 border-gray-400">
+            <td className={"py-4 pl-10"} colSpan={8}>
+              <Link
+                href={`detail/tambah_barang?id_bp=${id}&id_kr=${kredit.id}`}
+                className="flex gap-x-2 items-center justify-center bg-[#F0FF66] text-black w-[180px] py-2 rounded-lg"
+              >
+                <FontAwesomeIcon icon={faFolderPlus} />
+                Tambah Barang
+              </Link>
+            </td>
+          </tr>
+        </tbody>
+      ))}
+      <tfoot>
+        <tr>
+          <td colSpan={6} className={"py-2 text-right font-bold"}>
+            Total Jumlah
+          </td>
+          <td className="py-2">Rp.{total}</td>
+        </tr>
+      </tfoot>
+    </table>
   );
 }
 
@@ -359,19 +418,6 @@ export function LinkImageProyekDetail() {
   );
 }
 
-export function LinkAddBarang() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
-  return (
-    <Link
-      href={`detail/tambah_barang?id_bp=${id}`}
-      className="flex gap-x-2 items-center bg-[#F0FF66] text-black px-4 py-2 rounded-lg"
-    >
-      <FontAwesomeIcon icon={faFolderPlus} />
-      Tambah Barang
-    </Link>
-  );
-}
 export function LinkAddRekening() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id_bp");

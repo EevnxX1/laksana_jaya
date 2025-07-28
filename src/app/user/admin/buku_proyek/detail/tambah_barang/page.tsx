@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 export default function page() {
   const searchParams = useSearchParams();
   const [Idbpbarang, setIdbpbarang] = useState("");
+  const [Idrekening, setIdrekening] = useState("");
   const [NamaBarang, setNamaBarang] = useState("");
   const [Spesifikasi, setSpesifikasi] = useState("");
   const [Volume, setVolume] = useState("");
@@ -18,9 +19,11 @@ export default function page() {
   const router = useRouter();
 
   useEffect(() => {
-    const id = searchParams.get("id_bp");
-    if (id) {
-      setIdbpbarang(id);
+    const id_bp = searchParams.get("id_bp");
+    const id_kr = searchParams.get("id_kr");
+    if (id_bp && id_kr) {
+      setIdbpbarang(id_bp);
+      setIdrekening(id_kr);
     }
   });
 
@@ -40,6 +43,7 @@ export default function page() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id_bpbarang: Idbpbarang,
+            id_kdrekening: Idrekening,
             nama_barang: NamaBarang,
             spesifikasi: Spesifikasi,
             vol: Volume,
