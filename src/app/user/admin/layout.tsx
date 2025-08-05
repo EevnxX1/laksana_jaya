@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   Buku Proyek Barang
                 </Link>
                 <Link
-                  href={"/user/admin/buku_proyek_j"}
+                  href={"/user/admin/buku_proyek_jasa"}
                   className="px-5 py-2 hover:bg-black hover:text-white"
                 >
                   Buku Proyek Jasa

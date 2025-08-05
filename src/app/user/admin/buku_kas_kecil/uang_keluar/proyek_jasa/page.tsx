@@ -1,44 +1,48 @@
 "use client";
 import { useState, useEffect } from "react";
-import FormBkkBarang from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekBarang";
+import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJasa";
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 export default function page() {
-  const Id_bpjasa = "0";
-  const Identity = "uang_keluar";
-  const Identity_uk = "buku_barang";
-  const Kredit = "0";
-  const Kb_kas = "0";
-  const Upah = "0";
-  const Material_kaskecil = "0";
-  const Material_kasbesar = "0";
-  const Non_material = "0";
-  const Dircost = "0";
-  const Grand_total = "0";
   const router = useRouter();
-  const [Id_bpbarang, setId_bpbarang] = useState("");
+  const Id_bpbarang = "0";
+  const Identity = "uang_keluar";
+  const Identity_uk = "buku_jasa";
+  const Harga_satuan = "0";
+  const Volume = "0";
+  const Satuan = "-";
+  const Kredit = "0";
+  const [Id_bpjasa, setId_bpjasa] = useState("");
   const [Tanggal, setTanggal] = useState("");
   const [Instansi, setInstansi] = useState("");
   const [Pekerjaan, setPekerjaan] = useState("");
   const [Uraian, setUraian] = useState("");
-  const [Harga_satuan, setHarga_satuan] = useState("");
-  const [Volume, setVolume] = useState("");
-  const [Satuan, setSatuan] = useState("");
+  const [Kb_kas, setKb_kas] = useState("");
+  const [Upah, setUpah] = useState("");
+  const [Material_kaskecil, setMaterial_kaskecil] = useState("");
+  const [Material_kasbesar, setMaterial_kasbesar] = useState("");
+  const [Non_material, setNon_material] = useState("");
+  const [Dircost, setDircost] = useState("");
   const [Nota, setNota] = useState<File | null>(null);
   const [Debit, setDebit] = useState("");
+
+  useEffect(() => {
+    const jumlah =
+      Number(Upah) +
+      Number(Material_kaskecil) +
+      Number(Material_kasbesar) +
+      Number(Non_material) +
+      Number(Dircost);
+    setDebit(jumlah.toString());
+  }, [Upah, Material_kaskecil, Material_kasbesar, Non_material, Dircost]);
 
   useEffect(() => {
     const now = new Date();
     const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
     setTanggal(formatted);
   }, []);
-
-  useEffect(() => {
-    const total = Number(Harga_satuan) * Number(Volume);
-    setDebit(total.toString());
-  }, [Harga_satuan, Volume]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +67,6 @@ export default function page() {
     formData.append("material_kasbesar", Material_kasbesar);
     formData.append("non_material", Non_material);
     formData.append("dircost", Dircost);
-    formData.append("grand_total", Grand_total);
 
     // Tambahkan file-nya kalau ada
     if (Nota) {
@@ -93,7 +96,7 @@ export default function page() {
   };
 
   return (
-    <FormBkkBarang onSubmit={handleSubmit} encType="multipart/form-data">
+    <FormBkkJasa onSubmit={handleSubmit} encType="multipart/form-data">
       <InputTbl
         classPage="mb-7"
         type="date"
@@ -108,82 +111,63 @@ export default function page() {
         value={Uraian}
         onChange={(e) => setUraian(e.target.value)}
       >
-        Nama Barang
+        Uraian
       </InputTbl>
       <SelectPost
         onPostSelected={(post) => {
-          setId_bpbarang(post.id);
+          setId_bpjasa(post.id);
           setInstansi(post.instansi);
-          setPekerjaan(post.label_pekerjaan);
+          setPekerjaan(post.nama_pekerjaan);
         }}
       ></SelectPost>
       <InputTbl
         classPage="mb-7"
-        type="text"
-        value={Harga_satuan}
-        onChange={(e) => setHarga_satuan(e.target.value)}
+        type="number"
+        value={Kb_kas}
+        onChange={(e) => setKb_kas(e.target.value)}
       >
-        Harga Satuan
+        Kb Kas
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="text"
-        value={Volume}
-        onChange={(e) => setVolume(e.target.value)}
+        type="number"
+        value={Upah}
+        onChange={(e) => setUpah(e.target.value)}
       >
-        Volume
+        Upah
       </InputTbl>
-      <SelectTbl
+      <InputTbl
         classPage="mb-7"
-        labelValue="Satuan"
-        value={Satuan}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-          setSatuan(e.target.value)
-        }
+        type="number"
+        value={Material_kaskecil}
+        onChange={(e) => setMaterial_kaskecil(e.target.value)}
       >
-        <option defaultValue={"pilih"} className="text-black">
-          ~Pilih Satuan~
-        </option>
-        <option value="Unit" className="text-black">
-          Unit
-        </option>
-        <option value="Pcs" className="text-black">
-          Pcs
-        </option>
-        <option value="Buah" className="text-black">
-          Buah
-        </option>
-        <option value="Lusin" className="text-black">
-          Lusin
-        </option>
-        <option value="Box" className="text-black">
-          Box
-        </option>
-        <option value="Rim" className="text-black">
-          Rim
-        </option>
-        <option value="Pasang" className="text-black">
-          Pasang
-        </option>
-        <option value="Set" className="text-black">
-          Set
-        </option>
-        <option value="Kodi" className="text-black">
-          Kodi
-        </option>
-        <option value="Pak" className="text-black">
-          Pak
-        </option>
-        <option value="Dus" className="text-black">
-          Dus
-        </option>
-        <option value="Kg" className="text-black">
-          Kg
-        </option>
-        <option value="Ikat" className="text-black">
-          Ikat
-        </option>
-      </SelectTbl>
+        Material Kas Kecil
+      </InputTbl>
+      <InputTbl
+        classPage="mb-7"
+        type="number"
+        value={Non_material}
+        onChange={(e) => setNon_material(e.target.value)}
+      >
+        Non Material
+      </InputTbl>
+      <InputTbl
+        classPage="mb-7"
+        type="number"
+        value={Material_kasbesar}
+        onChange={(e) => setMaterial_kasbesar(e.target.value)}
+      >
+        Material Kas Besar
+      </InputTbl>
+      <InputTbl
+        classPage="mb-7"
+        type="number"
+        value={Dircost}
+        onChange={(e) => setDircost(e.target.value)}
+      >
+        Dircost
+      </InputTbl>
       <InputTbl
         classPage="mb-7"
         type="file"
@@ -196,13 +180,14 @@ export default function page() {
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="text"
+        type="number"
         value={Debit}
         onChange={(e) => setDebit(e.target.value)}
+        readOnly
       >
-        Harga Total
+        Jumlah
       </InputTbl>
-    </FormBkkBarang>
+    </FormBkkJasa>
   );
 }
 
@@ -216,7 +201,7 @@ export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
   const [selectedId, setSelectedId] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/bp_barang") // sesuaikan URL
+    fetch("http://localhost:8000/api/bp_jasa") // sesuaikan URL
       .then((res) => res.json())
       .then((data) => setpost(data))
       .catch((err) => console.error("Gagal ambil data:", err));
@@ -242,7 +227,7 @@ export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
       labelValue="Post"
     >
       <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Instansi~
+        ~Pilih Post~
       </option>
       {post.map((item) => (
         <option key={item.id} value={item.id} className="text-black">

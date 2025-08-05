@@ -15,7 +15,7 @@ export function LinkImage({ srcImage, href, classImage, text }: LinkComponent) {
   return (
     <Link
       href={href}
-      className="flex flex-col gap-y-2 w-[200px] px-4 py-4 bg-white text-black overflow-hidden"
+      className="flex flex-col justify-between h-[240px] w-[200px] px-4 py-4 bg-white text-black overflow-hidden"
     >
       <Image
         src={srcImage}
@@ -24,11 +24,13 @@ export function LinkImage({ srcImage, href, classImage, text }: LinkComponent) {
         height={50}
         className={clsx("w-full", classImage)}
       />
-      <p className="text-sm">{text}</p>
-      <div className="w-full flex justify-between items-center text-sm font-semibold">
-        <div className="px-3 py-1 bg-[#FF5656] rounded-lg">Lihat Detail</div>
-        <div className="px-2 py-1 bg-[#FF5656] rounded-lg">
-          <FontAwesomeIcon icon={faArrowDown} />
+      <div className="flex flex-col gap-y-2">
+        <p className="text-sm">{text}</p>
+        <div className="w-full flex justify-between items-center text-sm font-semibold">
+          <div className="px-3 py-1 bg-[#FF5656] rounded-lg">Lihat Detail</div>
+          <div className="px-2 py-1 bg-[#FF5656] rounded-lg">
+            <FontAwesomeIcon icon={faArrowDown} />
+          </div>
         </div>
       </div>
     </Link>
