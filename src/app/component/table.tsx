@@ -24,7 +24,7 @@ export function Table({
           <thead>
             <tr className="shadow-xl">
               {dataTh?.map((th, index) => (
-                <th key={index} className="pb-2">
+                <th key={index} className="pb-2 whitespace-pre-wrap">
                   {th}
                 </th>
               ))}

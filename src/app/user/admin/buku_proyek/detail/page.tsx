@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { InputTblDetail } from "@/app/component/input_tbl_detail";
-import { TableDetail } from "@/app/component/table_detail";
 import { Table } from "@/app/component/table";
 import { LinkImage } from "@/app/component/link_image";
 import TabelBukuProyekDetail from "@/app/ui/admin/buku_proyek/detail/tbl_bp_detail";
@@ -10,11 +9,12 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPenToSquare,
+  faPen,
   faCircleXmark,
   faFolderPlus,
   faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
+import { FormatNumber } from "@/app/component/format_number";
 
 interface detailDataBukuProyek {
   id: number;
@@ -23,6 +23,7 @@ interface detailDataBukuProyek {
   sub_kegiatan: string;
   mulai_pekerjaan: string;
   selesai_pekerjaan: string;
+  nilai_pekerjaan: string;
 }
 
 export default function page() {
@@ -89,8 +90,8 @@ export function InputTabelProyekDetail() {
     for (let index = 0; index < data3.length; index++) {
       operasi2 += Number(data3[index].debit); // pastikan dikonversi ke number
     }
-    const totalNilai = operasi1 + operasi2;
-    setNilaiPekerjaan(String("Rp." + totalNilai));
+    const totalNilai = operasi1 - operasi2;
+    setKeuntungan(String("Rp." + FormatNumber(Number(totalNilai))));
   }, [data2, data3]);
 
   useEffect(() => {
@@ -101,8 +102,7 @@ export function InputTabelProyekDetail() {
       setSubKegiatan(proyek.sub_kegiatan);
       setMulaiPelaksanaan(proyek.mulai_pekerjaan);
       setSelesaiPelaksanaan(proyek.selesai_pekerjaan);
-      console.log(proyek.mulai_pekerjaan);
-      console.log(proyek.selesai_pekerjaan);
+      setNilaiPekerjaan("Rp." + FormatNumber(Number(proyek.nilai_pekerjaan)));
     }
   }, [data]);
 
@@ -112,11 +112,13 @@ export function InputTabelProyekDetail() {
   const [MulaiPelaksanaan, setMulaiPelaksanaan] = useState("");
   const [SelesaiPelaksanaan, setSelesaiPelaksanaan] = useState("");
   const [NilaiPekerjaan, setNilaiPekerjaan] = useState("");
+  const [Keuntungan, setKeuntungan] = useState("");
   return (
     <form action="" className="flex flex-col gap-y-2">
       <InputTblDetail
         value={namaPekerjaan}
         onChange={(e) => setNamaPekerjaan(e.target.value)}
+        readOnly
       >
         Nama Pekerjaan
       </InputTblDetail>
@@ -129,6 +131,7 @@ export function InputTabelProyekDetail() {
       <InputTblDetail
         value={SubKegiatan}
         onChange={(e) => setSubKegiatan(e.target.value)}
+        readOnly
       >
         Sub Kegiatan
       </InputTblDetail>
@@ -136,6 +139,7 @@ export function InputTabelProyekDetail() {
         type="date"
         value={MulaiPelaksanaan}
         onChange={(e) => setMulaiPelaksanaan(e.target.value)}
+        readOnly
       >
         Mulai Pelaksanaan
       </InputTblDetail>
@@ -143,6 +147,7 @@ export function InputTabelProyekDetail() {
         type="date"
         value={SelesaiPelaksanaan}
         onChange={(e) => setSelesaiPelaksanaan(e.target.value)}
+        readOnly
       >
         Selesai Pelaksanaan
       </InputTblDetail>
@@ -152,6 +157,13 @@ export function InputTabelProyekDetail() {
         readOnly
       >
         Nilai Pekerjaan
+      </InputTblDetail>
+      <InputTblDetail
+        value={Keuntungan}
+        onChange={(e) => setKeuntungan(e.target.value)}
+        readOnly
+      >
+        Keuntungan
       </InputTblDetail>
     </form>
   );
@@ -218,10 +230,13 @@ export function TabelProyekDetail1() {
         </tr>
       </thead>
       {data2.map((kredit, ikredit) => (
-        <tbody>
+        <tbody key={ikredit}>
           <tr className="border-b-1 border-gray-400">
             <th colSpan={7} className="text-start pl-10 px-5">
-              Kode Rekening: {kredit.no_rekening}
+              <div className="flex gap-x-2">
+                <span>{kredit.no_rekening}</span>
+                <span>{kredit.ket}</span>
+              </div>
             </th>
             <th className="text-start py-4 px-5">
               <div className="flex justify-center">
@@ -264,8 +279,12 @@ export function TabelProyekDetail1() {
                 <td className={"py-4"}>{barang.spesifikasi}</td>
                 <td className={"py-4"}>{barang.vol}</td>
                 <td className={"py-4"}>{barang.satuan}</td>
-                <td className={"py-4"}>Rp.{barang.harga_satuan}</td>
-                <td className={"py-4"}>Rp.{barang.harga_total}</td>
+                <td className={"py-4"}>
+                  Rp.{FormatNumber(Number(barang.harga_satuan))}
+                </td>
+                <td className={"py-4"}>
+                  Rp.{FormatNumber(Number(barang.harga_total))}
+                </td>
                 <td className={"py-4"}>
                   <div className="flex justify-center">
                     <button
@@ -321,7 +340,7 @@ export function TabelProyekDetail1() {
           <td colSpan={6} className={"py-2 text-right font-bold"}>
             Total Jumlah
           </td>
-          <td className="py-2">Rp.{total}</td>
+          <td className="py-2">Rp.{FormatNumber(Number(total))}</td>
         </tr>
       </tfoot>
     </table>
@@ -354,7 +373,7 @@ export function TabelProyekDetail2() {
     for (let index = 0; index < data.length; index++) {
       operasi += Number(data[index].debit); // pastikan dikonversi ke number
     }
-    setTotal(String(operasi));
+    setTotal(FormatNumber(operasi));
     console.log(operasi);
   }, [data]);
 
@@ -372,8 +391,8 @@ export function TabelProyekDetail2() {
     row.uraian,
     row.volume,
     row.satuan,
-    "Rp." + row.harga_satuan,
-    "Rp." + row.debit,
+    "Rp." + FormatNumber(Number(row.harga_satuan)),
+    "Rp." + FormatNumber(Number(row.debit)),
   ]);
 
   return (
@@ -406,14 +425,16 @@ export function LinkImageProyekDetail() {
   }, []);
   return (
     <>
-      {data.map((list, index) => (
-        <LinkImage
-          key={index}
-          text={list.uraian}
-          href=""
-          srcImage={list.nota}
-        />
-      ))}
+      {data.map((list, index) =>
+        list.nota !== "-" ? (
+          <LinkImage
+            key={index}
+            text={list.uraian}
+            href=""
+            srcImage={list.nota}
+          />
+        ) : null
+      )}
     </>
   );
 }
@@ -428,6 +449,20 @@ export function LinkAddRekening() {
     >
       <FontAwesomeIcon icon={faCreditCard} />
       Masukkan Kode Rekening
+    </Link>
+  );
+}
+
+export function LinkUbahDataProyek() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
+  return (
+    <Link
+      href={`ubah_data?id_bpb=${id}`}
+      className="flex items-center px-5 py-2 rounded-lg gap-x-2 bg-[#F0FF66] text-black self-end w-fit"
+    >
+      <FontAwesomeIcon icon={faPen} className="w-4" />
+      <p className="font-semibold">Edit Data Proyek</p>
     </Link>
   );
 }

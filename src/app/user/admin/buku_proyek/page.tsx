@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 interface BukuProyekBarang {
   id: number;
@@ -41,9 +42,29 @@ export default function page() {
         <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
       </Link>
       <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
-      <Link href={""} className={"text-red-800"}>
+      <button
+        onClick={() => {
+          const konfirmasi = confirm("Yakin ingin hapus?");
+          if (konfirmasi) {
+            fetch(`http://127.0.0.1:8000/api/bp_barang/hapus_data/${row.id}`, {
+              method: "DELETE",
+            })
+              .then((res) => {
+                if (!res.ok) throw new Error("Gagal hapus");
+                toast.success("Data Buku Proyek Barang Berhasil Dihapus");
+
+                // Hapus data dari state agar tabel update
+                setData((prev) => prev.filter((item) => item.id !== row.id));
+              })
+              .catch(() => {
+                toast.error("Terjadi kesalahan saat menghapus");
+              });
+          }
+        }}
+        className={"text-red-800 cursor-pointer"}
+      >
         <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
-      </Link>
+      </button>
     </div>,
   ]);
 

@@ -14,6 +14,13 @@ export default function page() {
   const Harga_satuan = "0";
   const Volume = "-";
   const Satuan = "-";
+  const Kb_kas = "0";
+  const Upah = "0";
+  const Material_kaskecil = "0";
+  const Material_kasbesar = "0";
+  const Non_material = "0";
+  const Dircost = "0";
+  const Grand_total = "0";
   const router = useRouter();
   const [Tanggal, setTanggal] = useState("");
   const [Instansi, setInstansi] = useState("Buku Kantor");
@@ -45,6 +52,13 @@ export default function page() {
     formData.append("satuan", Satuan);
     formData.append("debit", Debit);
     formData.append("kredit", Kredit);
+    formData.append("kb_kas", Kb_kas);
+    formData.append("upah", Upah);
+    formData.append("material_kaskecil", Material_kaskecil);
+    formData.append("material_kasbesar", Material_kasbesar);
+    formData.append("non_material", Non_material);
+    formData.append("dircost", Dircost);
+    formData.append("grand_total", Grand_total);
 
     // ✅ Tambahkan file-nya kalau ada
     if (Nota) {

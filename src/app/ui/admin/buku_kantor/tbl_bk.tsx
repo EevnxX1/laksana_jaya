@@ -14,7 +14,7 @@ export default function TabelBukuKantor({ children }: TabelUi) {
     <section className="relative mx-auto w-[91vw] rounded-xl bg-white/20 px-8 py-8 flex flex-col gap-y-10">
       <div className="w-full flex flex-col gap-y-7">
         <div className="text-white">
-          <h1 className="font-bold text-2xl mb-3">Buku Kas Kecil</h1>
+          <h1 className="font-bold text-2xl mb-3">Buku Kantor</h1>
           <div className="flex justify-between">
             <form action="" className="flex space-x-5">
               <div className="flex flex-col">
@@ -49,7 +49,7 @@ export default function TabelBukuKantor({ children }: TabelUi) {
         </div>
         <div>
           <h1 className="font-bold text-xl mb-3 text-white">
-            Data Transaksi Kas Kecil
+            Data Transaksi Buku Kantor
           </h1>
           {children}
         </div>

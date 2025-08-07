@@ -1,11 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
-import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJasa";
+import React, { useState, useEffect } from "react";
+import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function page() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
   const router = useRouter();
   const Id_bpbarang = "0";
   const Identity = "uang_keluar";
@@ -26,7 +30,34 @@ export default function page() {
   const [Non_material, setNon_material] = useState("");
   const [Dircost, setDircost] = useState("");
   const [Nota, setNota] = useState<File | null>(null);
+  const [Gambar, setGambar] = useState("");
   const [Debit, setDebit] = useState("");
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    const proyek = Data[0];
+    if (proyek) {
+      setId_bpjasa(proyek.id_bpjasa);
+      setInstansi(proyek.instansi);
+      setPekerjaan(proyek.pekerjaan);
+      setTanggal(proyek.tanggal);
+      setUraian(proyek.uraian);
+      setKb_kas(proyek.kb_kas);
+      setUpah(proyek.upah);
+      setMaterial_kaskecil(proyek.material_kaskecil);
+      setMaterial_kasbesar(proyek.material_kasbesar);
+      setNon_material(proyek.non_material);
+      setDircost(proyek.dircost);
+      setGambar(proyek.nota);
+    }
+  }, [Data]);
 
   useEffect(() => {
     const jumlah =
@@ -74,20 +105,21 @@ export default function page() {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_keluar", {
+      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
         method: "POST",
         body: formData, // ⬅️ Tanpa headers manual
       });
 
-      console.log("instansi" + Instansi);
-      console.log("idbpbarang" + Id_bpbarang);
-      console.log("identity" + Identity);
+      console.log("instansi = " + Instansi);
+      console.log("idbpjasa = " + Id_bpjasa);
+      console.log("pekerjaan = " + Pekerjaan);
+      console.log("identity = " + Identity);
 
       if (res.status === 201 || res.status === 200) {
-        toast.success("Transaksi berhasil disimpan");
+        toast.success("Transaksi berhasil Diubah");
         router.push("/user/admin/buku_kas_kecil");
       } else {
-        toast.error("Gagal menyimpan data");
+        toast.error("Gagal menyimpan Transaksi");
       }
     } catch (error) {
       console.error(error);
@@ -96,7 +128,11 @@ export default function page() {
   };
 
   return (
-    <FormBkkJasa onSubmit={handleSubmit} encType="multipart/form-data">
+    <FormBkkUbahData
+      judul="BUKU KAS KECIL - UBAH BUKU JASA"
+      onSubmit={handleSubmit}
+      encType="multipart/form-data"
+    >
       <InputTbl
         classPage="mb-7"
         type="date"
@@ -168,16 +204,25 @@ export default function page() {
       >
         Dircost
       </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="file"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) setNota(file);
-        }}
-      >
-        Nota
-      </InputTbl>
+      <div className="flex flex-col gap-y-1">
+        <InputTbl
+          classPage=""
+          type="file"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) setNota(file);
+          }}
+        >
+          Nota
+        </InputTbl>
+        <Link
+          href={Gambar}
+          target="_blank"
+          className="underline self-end w-[68%] text-sm"
+        >
+          Lihat Nota Sebelumnya
+        </Link>
+      </div>
       <InputTbl
         classPage="mb-7"
         type="number"
@@ -187,7 +232,7 @@ export default function page() {
       >
         Jumlah
       </InputTbl>
-    </FormBkkJasa>
+    </FormBkkUbahData>
   );
 }
 
@@ -199,8 +244,15 @@ interface InputSelectPost
 export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
   const [post, setpost] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
+  const [Data, setData] = useState<any[]>([]);
 
   useEffect(() => {
+    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
     fetch("http://localhost:8000/api/bp_jasa") // sesuaikan URL
       .then((res) => res.json())
       .then((data) => setpost(data))
@@ -226,14 +278,20 @@ export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
       classPage="mb-7"
       labelValue="Post"
     >
-      <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Post~
-      </option>
-      {post.map((item) => (
-        <option key={item.id} value={item.id} className="text-black">
-          {item.post}
-        </option>
-      ))}
+      {post.map((item) =>
+        item.id == Data[0].id_bpjasa ? (
+          <option key={item.id} value={item.id} className="text-black">
+            {item.post + " (Before)"}
+          </option>
+        ) : null
+      )}
+      {post.map((item) =>
+        item.id !== Data[0].id_bpjasa ? (
+          <option key={item.id} value={item.id} className="text-black">
+            {item.post}
+          </option>
+        ) : null
+      )}
     </SelectTbl>
   );
 }

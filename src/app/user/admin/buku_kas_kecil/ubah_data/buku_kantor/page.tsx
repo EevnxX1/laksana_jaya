@@ -1,48 +1,64 @@
 "use client";
 import { useState, useEffect } from "react";
-import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJasa";
+import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+interface IsiValueBukuKantor {
+  id: number;
+  tanggal: string;
+  uraian: string;
+  debit: string;
+  nota: string;
+}
 
 export default function page() {
-  const router = useRouter();
-  const Id_bpbarang = "0";
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
+  const Id_bpjasa = "0";
   const Identity = "uang_keluar";
-  const Identity_uk = "buku_jasa";
-  const Harga_satuan = "0";
-  const Volume = "0";
-  const Satuan = "-";
+  const Identity_uk = "buku_kantor";
   const Kredit = "0";
-  const [Id_bpjasa, setId_bpjasa] = useState("");
+  const Id_bpbarang = "0";
+  const Harga_satuan = "0";
+  const Volume = "-";
+  const Satuan = "-";
+  const Kb_kas = "0";
+  const Upah = "0";
+  const Material_kaskecil = "0";
+  const Material_kasbesar = "0";
+  const Non_material = "0";
+  const Dircost = "0";
+  const Grand_total = "0";
+  const router = useRouter();
+  const [Data, setData] = useState<IsiValueBukuKantor[]>([]);
   const [Tanggal, setTanggal] = useState("");
-  const [Instansi, setInstansi] = useState("");
-  const [Pekerjaan, setPekerjaan] = useState("");
+  const [Instansi, setInstansi] = useState("Buku Kantor");
+  const [Pekerjaan, setPekerjaan] = useState("Buku Kantor");
   const [Uraian, setUraian] = useState("");
-  const [Kb_kas, setKb_kas] = useState("");
-  const [Upah, setUpah] = useState("");
-  const [Material_kaskecil, setMaterial_kaskecil] = useState("");
-  const [Material_kasbesar, setMaterial_kasbesar] = useState("");
-  const [Non_material, setNon_material] = useState("");
-  const [Dircost, setDircost] = useState("");
   const [Nota, setNota] = useState<File | null>(null);
+  const [Gambar, setGambar] = useState("");
   const [Debit, setDebit] = useState("");
 
   useEffect(() => {
-    const jumlah =
-      Number(Upah) +
-      Number(Material_kaskecil) +
-      Number(Material_kasbesar) +
-      Number(Non_material) +
-      Number(Dircost);
-    setDebit(jumlah.toString());
-  }, [Upah, Material_kaskecil, Material_kasbesar, Non_material, Dircost]);
+    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
 
   useEffect(() => {
-    const now = new Date();
-    const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    setTanggal(formatted);
-  }, []);
+    const proyek = Data[0];
+    if (proyek) {
+      setTanggal(proyek.tanggal);
+      setUraian(proyek.uraian);
+      setDebit(proyek.debit);
+      setGambar(proyek.nota);
+    }
+  }, [Data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,27 +83,24 @@ export default function page() {
     formData.append("material_kasbesar", Material_kasbesar);
     formData.append("non_material", Non_material);
     formData.append("dircost", Dircost);
+    formData.append("grand_total", Grand_total);
 
-    // Tambahkan file-nya kalau ada
+    // ✅ Tambahkan file-nya kalau ada
     if (Nota) {
       formData.append("nota", Nota);
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_keluar", {
+      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
         method: "POST",
         body: formData, // ⬅️ Tanpa headers manual
       });
 
-      console.log("instansi" + Instansi);
-      console.log("idbpbarang" + Id_bpbarang);
-      console.log("identity" + Identity);
-
       if (res.status === 201 || res.status === 200) {
-        toast.success("Transaksi berhasil disimpan");
+        toast.success("Transaksi berhasil diubah");
         router.push("/user/admin/buku_kas_kecil");
       } else {
-        toast.error("Gagal menyimpan data");
+        toast.error("Gagal Mengubah Transaksi");
       }
     } catch (error) {
       console.error(error);
@@ -96,7 +109,11 @@ export default function page() {
   };
 
   return (
-    <FormBkkJasa onSubmit={handleSubmit} encType="multipart/form-data">
+    <FormBkkUbahData
+      onSubmit={handleSubmit}
+      encType="multipart/form-data"
+      judul="BUKU KAS KECIL - UBAH BUKU KANTOR"
+    >
       <InputTbl
         classPage="mb-7"
         type="date"
@@ -113,81 +130,52 @@ export default function page() {
       >
         Uraian
       </InputTbl>
-      <SelectPost
-        onPostSelected={(post) => {
-          setId_bpjasa(post.id);
-          setInstansi(post.instansi);
-          setPekerjaan(post.nama_pekerjaan);
-        }}
-      ></SelectPost>
+      <div className="flex flex-col gap-y-1 mb-7 mt-7">
+        <InputTbl
+          classPage=""
+          type="file"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) setNota(file);
+          }}
+        >
+          Nota
+        </InputTbl>
+        <Link
+          href={Gambar}
+          target="_blank"
+          className="underline self-end w-[68%] text-sm"
+        >
+          Lihat Nota Sebelumnya
+        </Link>
+      </div>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Kb_kas}
-        onChange={(e) => setKb_kas(e.target.value)}
-      >
-        Kb Kas
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Upah}
-        onChange={(e) => setUpah(e.target.value)}
-      >
-        Upah
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Material_kaskecil}
-        onChange={(e) => setMaterial_kaskecil(e.target.value)}
-      >
-        Material Kas Kecil
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Non_material}
-        onChange={(e) => setNon_material(e.target.value)}
-      >
-        Non Material
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Material_kasbesar}
-        onChange={(e) => setMaterial_kasbesar(e.target.value)}
-      >
-        Material Kas Besar
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Dircost}
-        onChange={(e) => setDircost(e.target.value)}
-      >
-        Dircost
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="file"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) setNota(file);
-        }}
-      >
-        Nota
-      </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
+        type="text"
         value={Debit}
         onChange={(e) => setDebit(e.target.value)}
+      >
+        Nilai Uang Keluar
+      </InputTbl>
+      <InputTbl
+        classPage="mb-7"
+        type="text"
+        value={Instansi}
+        onChange={(e) => setInstansi(e.target.value)}
         readOnly
       >
-        Jumlah
+        Instansi
       </InputTbl>
-    </FormBkkJasa>
+      <InputTbl
+        classPage="mb-7"
+        type="text"
+        value={Pekerjaan}
+        onChange={(e) => setPekerjaan(e.target.value)}
+        readOnly
+      >
+        Pekerjaan
+      </InputTbl>
+    </FormBkkUbahData>
   );
 }
 
@@ -201,7 +189,7 @@ export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
   const [selectedId, setSelectedId] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/bp_jasa") // sesuaikan URL
+    fetch("http://localhost:8000/api/bp_barang") // sesuaikan URL
       .then((res) => res.json())
       .then((data) => setpost(data))
       .catch((err) => console.error("Gagal ambil data:", err));
@@ -227,7 +215,7 @@ export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
       labelValue="Post"
     >
       <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Post~
+        ~Pilih Instansi~
       </option>
       {post.map((item) => (
         <option key={item.id} value={item.id} className="text-black">

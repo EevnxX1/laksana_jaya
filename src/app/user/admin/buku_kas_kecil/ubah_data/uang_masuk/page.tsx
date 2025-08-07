@@ -1,11 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import FormBkkUangMasuk from "@/app/ui/admin/buku_kas_kecil/uang_masuk/form_uang_masuk";
+import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function page() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
   const Kb_kas = "0";
   const Upah = "0";
   const Material_kaskecil = "0";
@@ -24,56 +27,88 @@ export default function page() {
   const [Harga_satuan, setHarga_satuan] = useState("0");
   const [Volume, setVolume] = useState("0");
   const [Satuan, setSatuan] = useState("-");
-  const [Nota, setNota] = useState("-");
+  const [Nota, setNota] = useState("");
   const [Debit, setDebit] = useState("0");
   const [Kredit, setKredit] = useState("");
+  const [Data, setData] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    const now = new Date();
-    const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    setTanggal(formatted);
+    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    const proyek = Data[0];
+    if (proyek) {
+      setTanggal(proyek.tanggal);
+      setUraian(proyek.uraian);
+      setKredit(proyek.kredit);
+    }
+  }, [Data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("id" + Id_bpbarang);
+    console.log("isi = ", Tanggal);
+    console.log("isi = ", Uraian);
+    console.log("isi = ", Kredit);
+    console.log("isi = ", Id_bpbarang);
+    console.log("isi = ", Id_bpjasa);
+    console.log("isi = ", Identity);
+    console.log("isi = ", Identity_uk);
+    console.log("isi = ", Instansi);
+    console.log("isi = ", Pekerjaan);
+    console.log("isi = ", Harga_satuan);
+    console.log("isi = ", Volume);
+    console.log("isi = ", Satuan);
+    console.log("isi = ", Nota);
+    console.log("isi = ", Debit);
+    console.log("isi = ", Kb_kas);
+    console.log("isi = ", Upah);
+    console.log("isi = ", Material_kasbesar);
+    console.log("isi = ", Material_kaskecil);
+    console.log("isi = ", Non_material);
+    console.log("isi = ", Dircost);
+    console.log("isi = ", Grand_total);
+    console.log("Selesai_____");
+
+    const formData = new FormData();
+    formData.append("id_bpbarang", Id_bpbarang);
+    formData.append("id_bpjasa", Id_bpjasa);
+    formData.append("identity", Identity);
+    formData.append("identity_uk", Identity_uk);
+    formData.append("tanggal", Tanggal);
+    formData.append("instansi", Instansi);
+    formData.append("pekerjaan", Pekerjaan);
+    formData.append("uraian", Uraian);
+    formData.append("harga_satuan", Harga_satuan);
+    formData.append("volume", Volume);
+    formData.append("satuan", Satuan);
+    formData.append("debit", Debit);
+    formData.append("kredit", Kredit);
+    formData.append("kb_kas", Kb_kas);
+    formData.append("upah", Upah);
+    formData.append("material_kaskecil", Material_kaskecil);
+    formData.append("material_kasbesar", Material_kasbesar);
+    formData.append("non_material", Non_material);
+    formData.append("dircost", Dircost);
+    formData.append("grand_total", Grand_total);
+    formData.append("nota", Nota);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_masuk", {
+      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_bpbarang: Id_bpbarang,
-          id_bpjasa: Id_bpjasa,
-          identity: Identity,
-          identity_uk: Identity_uk,
-          tanggal: Tanggal,
-          instansi: Instansi,
-          pekerjaan: Pekerjaan,
-          uraian: Uraian,
-          harga_satuan: Harga_satuan,
-          volume: Volume,
-          satuan: Satuan,
-          nota: Nota,
-          debit: Debit,
-          kredit: Kredit,
-          kb_kas: Kb_kas,
-          upah: Upah,
-          material_kaskecil: Material_kaskecil,
-          material_kasbesar: Material_kasbesar,
-          non_material: Non_material,
-          dircost: Dircost,
-          grand_total: Grand_total,
-        }),
+        body: formData, // ⬅️ Tanpa headers manual
       });
 
       if (res.status === 201 || res.status === 200) {
-        toast.success("Data berhasil disimpan");
+        toast.success("Transaksi berhasil Diubah");
         router.push("/user/admin/buku_kas_kecil");
       } else {
-        toast.error("Gagal menyimpan data");
+        toast.error("Gagal menyimpan Transaksi");
       }
     } catch (error) {
       console.error(error);
@@ -82,7 +117,10 @@ export default function page() {
   };
 
   return (
-    <FormBkkUangMasuk onSubmit={handleSubmit}>
+    <FormBkkUbahData
+      judul="BUKU KAS KECIL - UBAH UANG MASUK"
+      onSubmit={handleSubmit}
+    >
       <InputTbl
         classPage="hidden"
         value={Id_bpbarang}
@@ -184,6 +222,6 @@ export default function page() {
       >
         Kredit
       </InputTbl>
-    </FormBkkUangMasuk>
+    </FormBkkUbahData>
   );
 }

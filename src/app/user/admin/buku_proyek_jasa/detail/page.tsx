@@ -7,8 +7,10 @@ import { LinkImage } from "@/app/component/link_image";
 import TabelBukuProyekDetail from "@/app/ui/admin/buku_proyek_jasa/detail/tbl_bp_detail";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { FormatNumber } from "@/app/component/format_number";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faPen,
   faCircleXmark,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
@@ -70,7 +72,9 @@ export function InputTabelProyekDetail() {
       setInstansi(proyek.instansi);
       setSubKegiatan(proyek.sub_kegiatan);
       setTahun_anggaran(proyek.tahun_anggaran);
-      setNilaiPekerjaan(proyek.nilai_pekerjaan);
+      setNilaiPekerjaan(
+        String("Rp. " + FormatNumber(Number(proyek.nilai_pekerjaan)))
+      );
     }
   }, [data]);
 
@@ -106,7 +110,7 @@ export function InputTabelProyekDetail() {
         Tahun Anggaran
       </InputTblDetail>
       <InputTblDetail
-        value={"Rp. " + NilaiPekerjaan}
+        value={NilaiPekerjaan}
         onChange={(e) => setNilaiPekerjaan(e.target.value)}
         readOnly
       >
@@ -156,13 +160,12 @@ export function TabelProyekDetail2() {
     "Tanggal",
     "Uraian",
     "Kb Kas",
-    "Material Kas Kecil",
-    "Material Kas Besar",
-    "Non Material",
+    "Material\nKas Kecil",
+    "Material\nKas Besar",
+    "Non\nMaterial",
     "Dircost",
     "Jumlah",
-    "Grand Total",
-    "Action",
+    "Grand\nTotal",
   ];
 
   // Hitung grand_total secara berurutan
@@ -183,42 +186,13 @@ export function TabelProyekDetail2() {
     index + 1,
     row.tanggal,
     row.uraian,
-    "Rp." + row.kb_kas,
-    "Rp." + row.material_kaskecil,
-    "Rp." + row.material_kasbesar,
-    "Rp." + row.non_material,
-    "Rp." + row.dircost,
-    "Rp." + row.debit,
-    "Rp." + row.grandTotal,
-    <div className="flex justify-center">
-      <Link href={""} className={"text-green-800"}>
-        <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
-      </Link>
-      <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
-      <button
-        // onClick={() => {
-        //   const konfirmasi = confirm("Yakin ingin hapus?");
-        //   if (konfirmasi) {
-        //     fetch(`http://127.0.0.1:8000/api/bkk/${row.id}`, {
-        //       method: "DELETE",
-        //     })
-        //       .then((res) => {
-        //         if (!res.ok) throw new Error("Gagal hapus");
-        //         toast.success("Data Buku Kas Kecil Berhasil Dihapus");
-
-        //         // Hapus data dari state agar tabel update
-        //         setData((prev) => prev.filter((item) => item.id !== row.id));
-        //       })
-        //       .catch(() => {
-        //         toast.error("Terjadi kesalahan saat menghapus");
-        //       });
-        //   }
-        // }}
-        className={"text-red-800 cursor-pointer"}
-      >
-        <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
-      </button>
-    </div>,
+    "Rp." + FormatNumber(row.kb_kas),
+    "Rp." + FormatNumber(row.material_kaskecil),
+    "Rp." + FormatNumber(row.material_kasbesar),
+    "Rp." + FormatNumber(row.non_material),
+    "Rp." + FormatNumber(row.dircost),
+    "Rp." + FormatNumber(row.debit),
+    "Rp." + FormatNumber(row.grandTotal),
   ]);
 
   return (
@@ -228,7 +202,7 @@ export function TabelProyekDetail2() {
       source="total"
       fieldNameRow="Total Jumlah"
       classTotal="pr-20 min-[1450px]:pr-[110px] min-[1700px]:pr-[130px]"
-      dataTotal={"Rp." + Total}
+      dataTotal={"Rp." + FormatNumber(Number(Total))}
     ></Table>
   );
 }
@@ -251,14 +225,30 @@ export function LinkImageProyekDetail() {
   }, []);
   return (
     <>
-      {data.map((list, index) => (
-        <LinkImage
-          key={index}
-          text={list.uraian}
-          href=""
-          srcImage={list.nota}
-        />
-      ))}
+      {data.map((list, index) =>
+        list.nota !== "-" ? (
+          <LinkImage
+            key={index}
+            text={list.uraian}
+            href=""
+            srcImage={list.nota}
+          />
+        ) : null
+      )}
     </>
+  );
+}
+
+export function LinkUbahDataProyek() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bp");
+  return (
+    <Link
+      href={`ubah_data?id_bpj=${id}`}
+      className="flex items-center px-5 py-2 rounded-lg gap-x-2 bg-[#F0FF66] text-black self-end w-fit"
+    >
+      <FontAwesomeIcon icon={faPen} className="w-4" />
+      <p className="font-semibold">Edit Data Proyek</p>
+    </Link>
   );
 }

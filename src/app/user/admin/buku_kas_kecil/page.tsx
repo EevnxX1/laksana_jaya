@@ -8,6 +8,7 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { FormatNumber } from "@/app/component/format_number";
 
 interface BukuKasKecil {
   id: number;
@@ -46,7 +47,6 @@ export default function page() {
   });
 
   const dataTh = [
-    "",
     "No",
     "Tanggal",
     "Uraian",
@@ -54,24 +54,66 @@ export default function page() {
     "Pekerjaan",
     "Debit",
     "Kredit",
+    "Saldo",
     "Action",
   ];
 
-  const dataTd = data.map((row, index) => [
-    <div className="flex justify-center px-2">
-      <input type="checkbox" className="w-4 h-4" />
-    </div>,
+  // Hitung Saldo secara berurutan
+  const dataWithSaldo = data.reduce((acc: any[], current, index) => {
+    const debit = Number(current.debit) || 0;
+    const kredit = Number(current.kredit) || 0;
+    const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
+    let operate = kredit - debit;
+    operate += prevSaldo;
+    const Saldo = operate;
+    acc.push({
+      ...current,
+      Saldo, // tambahkan field baru
+    });
+    return acc;
+  }, []);
+
+  const dataTd = dataWithSaldo.map((row, index) => [
     index + 1,
     row.tanggal,
     row.uraian,
     row.instansi,
     row.pekerjaan,
-    row.debit,
-    row.kredit,
+    "Rp." + FormatNumber(row.debit),
+    "Rp." + FormatNumber(row.kredit),
+    "Rp." + FormatNumber(row.Saldo),
     <div className="flex justify-center">
-      <Link href={""} className={"text-green-800"}>
-        <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
-      </Link>
+      {row.identity == "uang_keluar" ? (
+        row.identity_uk == "buku_kantor" ? (
+          <Link
+            href={`buku_kas_kecil/ubah_data/buku_kantor?id_bp=${row.id}`}
+            className={"text-green-800"}
+          >
+            <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+          </Link>
+        ) : row.identity_uk == "buku_barang" ? (
+          <Link
+            href={`buku_kas_kecil/ubah_data/proyek_barang?id_bp=${row.id}`}
+            className={"text-green-800"}
+          >
+            <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+          </Link>
+        ) : row.identity_uk == "buku_jasa" ? (
+          <Link
+            href={`buku_kas_kecil/ubah_data/proyek_jasa?id_bp=${row.id}`}
+            className={"text-green-800"}
+          >
+            <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+          </Link>
+        ) : null
+      ) : (
+        <Link
+          href={`buku_kas_kecil/ubah_data/uang_masuk?id_bp=${row.id}`}
+          className={"text-green-800"}
+        >
+          <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        </Link>
+      )}
       <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
       <button
         onClick={() => {
@@ -101,13 +143,7 @@ export default function page() {
 
   return (
     <TabelBukuKasKecil>
-      <Table
-        source="total"
-        fieldNameRow="Saldo"
-        dataTotal={"Rp." + total}
-        dataTh={dataTh}
-        dataTd={dataTd}
-      />
+      <Table source="info" dataTh={dataTh} dataTd={dataTd} />
     </TabelBukuKasKecil>
   );
 }
