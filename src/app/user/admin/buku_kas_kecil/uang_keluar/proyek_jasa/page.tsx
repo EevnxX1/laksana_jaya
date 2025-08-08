@@ -4,6 +4,7 @@ import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJa
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { FormatPrice, FormatNumber } from "@/app/component/format_number";
 
 export default function page() {
   const router = useRouter();
@@ -27,6 +28,13 @@ export default function page() {
   const [Dircost, setDircost] = useState("");
   const [Nota, setNota] = useState<File | null>(null);
   const [Debit, setDebit] = useState("");
+  const [FormatDebit, setFormatDebit] = useState("");
+
+  useEffect(() => {
+    const now = new Date();
+    const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    setTanggal(formatted);
+  }, []);
 
   useEffect(() => {
     const jumlah =
@@ -36,13 +44,8 @@ export default function page() {
       Number(Non_material) +
       Number(Dircost);
     setDebit(jumlah.toString());
+    setFormatDebit(FormatNumber(jumlah));
   }, [Upah, Material_kaskecil, Material_kasbesar, Non_material, Dircost]);
-
-  useEffect(() => {
-    const now = new Date();
-    const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    setTanggal(formatted);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,13 +181,7 @@ export default function page() {
       >
         Nota
       </InputTbl>
-      <InputTbl
-        classPage="mb-7"
-        type="number"
-        value={Debit}
-        onChange={(e) => setDebit(e.target.value)}
-        readOnly
-      >
+      <InputTbl classPage="mb-7" type="text" value={FormatDebit} readOnly>
         Jumlah
       </InputTbl>
     </FormBkkJasa>

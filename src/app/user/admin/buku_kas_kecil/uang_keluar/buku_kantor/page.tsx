@@ -4,6 +4,7 @@ import FormBkkKantor from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyek
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { FormatPrice } from "@/app/component/format_number";
 
 export default function page() {
   const Id_bpjasa = "0";
@@ -28,6 +29,7 @@ export default function page() {
   const [Uraian, setUraian] = useState("");
   const [Nota, setNota] = useState<File | null>(null);
   const [Debit, setDebit] = useState("");
+  const [FormatDebit, setFormatDebit] = useState("");
 
   useEffect(() => {
     const now = new Date();
@@ -35,8 +37,28 @@ export default function page() {
     setTanggal(formatted);
   }, []);
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedDebit = FormatDebit.replace(/\./g, "");
+    setDebit(cleanedDebit);
+  }, [FormatDebit]);
+
+  const handleInputChange = (event: any) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatDebit(formattedValue);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("Debit = ", Debit);
+    console.log("Format Debit = ", FormatDebit);
 
     const formData = new FormData();
     formData.append("id_bpbarang", Id_bpbarang);
@@ -96,6 +118,7 @@ export default function page() {
       <InputTbl
         classPage="mb-7"
         type="text"
+        placeholder="Masukkan Uraian"
         value={Uraian}
         onChange={(e) => setUraian(e.target.value)}
       >
@@ -114,8 +137,9 @@ export default function page() {
       <InputTbl
         classPage="mb-7"
         type="text"
-        value={Debit}
-        onChange={(e) => setDebit(e.target.value)}
+        placeholder="Masukkan Nominal"
+        value={FormatDebit}
+        onChange={handleInputChange}
       >
         Nilai Uang Keluar
       </InputTbl>

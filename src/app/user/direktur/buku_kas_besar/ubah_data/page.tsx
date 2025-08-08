@@ -1,26 +1,44 @@
 "use client";
-import FormBkbMasuk from "@/app/ui/direktur/form_bkb_masuk";
+import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
-import { FormatPrice } from "@/app/component/format_number";
+import { FormatPrice, FormatNumber } from "@/app/component/format_number";
+import { useSearchParams } from "next/navigation";
 
 export default function page() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id_bkb");
   const [Tanggal, setTanggal] = useState("");
   const [KdTransaksi, setKdTransaksi] = useState("");
   const [Uraian, setUraian] = useState("");
   const [Debit, setDebit] = useState("");
-  const [FormatDebit, setFormatDebit] = useState("0");
+  const [FormatDebit, setFormatDebit] = useState("");
   const [Kredit, setKredit] = useState("");
-  const [FormatKredit, setFormatKredit] = useState("0");
+  const [FormatKredit, setFormatKredit] = useState("");
+  const [Data, setData] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    const now = new Date();
-    const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    setTanggal(formatted);
+    fetch(`http://127.0.0.1:8000/api/bkb/${id}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
   }, []);
+
+  useEffect(() => {
+    const proyek = Data[0];
+    if (proyek) {
+      setTanggal(proyek.tanggal);
+      setKdTransaksi(proyek.kd_transaksi);
+      setUraian(proyek.uraian);
+      setDebit(proyek.debit);
+      setFormatDebit(FormatNumber(proyek.debit));
+      setKredit(proyek.kredit);
+      setFormatKredit(FormatNumber(proyek.kredit));
+    }
+  }, [Data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,24 +48,24 @@ export default function page() {
     console.log("Format Kredit = ", FormatKredit);
     console.log("Kredit = ", Kredit);
 
+    const formData = new FormData();
+    formData.append("tanggal", Tanggal);
+    formData.append("kd_transaksi", KdTransaksi);
+    formData.append("uraian", Uraian);
+    formData.append("debit", Debit);
+    formData.append("kredit", Kredit);
+
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkb/tambah_data", {
+      const res = await fetch(`http://127.0.0.1:8000/api/bkb/ubah_data/${id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tanggal: Tanggal,
-          kd_transaksi: KdTransaksi,
-          uraian: Uraian,
-          debit: Debit,
-          kredit: Kredit,
-        }),
+        body: formData, // ⬅️ Tanpa headers manual
       });
 
       if (res.status === 201 || res.status === 200) {
-        toast.success("Transaksi berhasil disimpan");
+        toast.success("Transaksi berhasil Diubah");
         router.push("/user/direktur/buku_kas_besar");
       } else {
-        toast.error("Gagal menyimpan Transaksi");
+        toast.error("Gagal Mengubah Transaksi");
       }
     } catch (error) {
       console.error(error);
@@ -89,7 +107,7 @@ export default function page() {
   };
 
   return (
-    <FormBkbMasuk onSubmit={handleSubmit}>
+    <FormBkkUbahData judul="Form Ubah Transaksi" onSubmit={handleSubmit}>
       <InputTbl classPage="mb-7" value={Tanggal} readOnly>
         Tanggal
       </InputTbl>
@@ -121,6 +139,6 @@ export default function page() {
       >
         Uraian
       </InputTbl>
-    </FormBkbMasuk>
+    </FormBkkUbahData>
   );
 }

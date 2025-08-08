@@ -4,6 +4,7 @@ import FormBkkUangMasuk from "@/app/ui/admin/buku_kas_kecil/uang_masuk/form_uang
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { FormatPrice } from "@/app/component/format_number";
 
 export default function page() {
   const Kb_kas = "0";
@@ -27,6 +28,7 @@ export default function page() {
   const [Nota, setNota] = useState("-");
   const [Debit, setDebit] = useState("0");
   const [Kredit, setKredit] = useState("");
+  const [FormatKredit, setFormatKredit] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -35,10 +37,17 @@ export default function page() {
     setTanggal(formatted);
   }, []);
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedKredit = FormatKredit.replace(/\./g, "");
+    setKredit(cleanedKredit);
+  }, [FormatKredit]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("id" + Id_bpbarang);
+    console.log("Kredit = ", Kredit);
+    console.log("Format Kredit = ", FormatKredit);
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_masuk", {
@@ -79,6 +88,17 @@ export default function page() {
       console.error(error);
       toast.error("Terjadi error saat submit");
     }
+  };
+
+  const handleInputChange = (event: any) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatKredit(formattedValue);
   };
 
   return (
@@ -173,14 +193,16 @@ export default function page() {
       <InputTbl
         classPage="mb-7"
         value={Uraian}
+        placeholder="Masukkan Uraian"
         onChange={(e) => setUraian(e.target.value)}
       >
         Uraian
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        value={Kredit}
-        onChange={(e) => setKredit(e.target.value)}
+        placeholder="Masukkan Nominal"
+        value={FormatKredit}
+        onChange={handleInputChange}
       >
         Kredit
       </InputTbl>

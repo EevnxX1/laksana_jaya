@@ -4,6 +4,7 @@ import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { FormatPrice } from "@/app/component/format_number";
 
 interface InputSelectInstansi
   extends React.SelectHTMLAttributes<HTMLSelectElement> {}
@@ -38,6 +39,7 @@ export default function page() {
   const [Sub_kegiatan, setSub_kegiatan] = useState("");
   const [Tahun_anggaran, setTahun_anggaran] = useState("");
   const [Nilai_pekerjaan, setNilai_pekerjaan] = useState("");
+  const [FormatNilai_pekerjaan, setFormatNilai_pekerjaan] = useState("");
   const router = useRouter(); // Hook navigasi
 
   useEffect(() => {
@@ -46,8 +48,28 @@ export default function page() {
     setTanggal(formatted);
   }, []);
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedNilaiPekerjaan = FormatNilai_pekerjaan.replace(/\./g, "");
+    setNilai_pekerjaan(cleanedNilaiPekerjaan);
+  }, [FormatNilai_pekerjaan]);
+
+  const handleInputChange = (event: any) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatNilai_pekerjaan(formattedValue);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("Format nilai pekerjaan = ", FormatNilai_pekerjaan);
+    console.log("nilai pekerjaan = ", Nilai_pekerjaan);
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/bp_jasa/tambah_data", {
@@ -104,8 +126,8 @@ export default function page() {
       <InputTbl
         classPage="mb-7"
         type="text"
-        value={Nilai_pekerjaan}
-        onChange={(e) => setNilai_pekerjaan(e.target.value)}
+        value={FormatNilai_pekerjaan}
+        onChange={handleInputChange}
       >
         Nilai Pekerjaan
       </InputTbl>
