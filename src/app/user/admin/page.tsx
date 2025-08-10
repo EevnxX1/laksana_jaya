@@ -1,7 +1,9 @@
 "use client";
 import React from "react";
+import { useState, useEffect } from "react";
+import { FormatNumber } from "@/app/component/format_number";
 import DashboardTemplate from "@/app/ui/dashboard_admin";
-import { Line, Pie, Bar } from "react-chartjs-2";
+import { Line, Pie, Bar, Scatter } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,6 +33,45 @@ ChartJS.register(
 
 export default function page() {
   return <DashboardTemplate />;
+}
+
+export function Saldo() {
+  const [Data, setData] = useState<any[]>([]);
+  const [Saldo, setSaldo] = useState("");
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Hitung Saldo secara berurutan
+  const dataWithSaldo = Data.reduce((acc: any[], current, index) => {
+    const debit = Number(current.debit) || 0;
+    const kredit = Number(current.kredit) || 0;
+    const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
+    let operate = kredit - debit;
+    operate += prevSaldo;
+    const Saldo = operate;
+    acc.push({
+      ...current,
+      Saldo, // tambahkan field baru
+    });
+    return acc;
+  }, []);
+
+  useEffect(() => {
+    for (let index = 0; index > dataWithSaldo.length; index++) {
+      console.log("data = ", dataWithSaldo[index]);
+      if (dataWithSaldo[index].id == dataWithSaldo.length) {
+        setSaldo(dataWithSaldo[index].Saldo);
+        console.log("datawithsaldo = ", dataWithSaldo[index].Saldo);
+      }
+    }
+    console.log("saldo = ", Saldo);
+  });
+  return <>Rp. {FormatNumber(Number(Saldo))}</>;
 }
 
 export function Chart1() {
@@ -185,6 +226,122 @@ export function Chart3() {
   return (
     <div style={{ width: "100%" }}>
       <Bar data={data} options={options as any} />
+    </div>
+  );
+}
+
+export function Chart4() {
+  const data = {
+    datasets: [
+      {
+        label: "Titik Data",
+        data: [
+          { x: 10, y: 20 },
+          { x: 15, y: 10 },
+          { x: 5, y: 15 },
+          { x: 25, y: 22 },
+          { x: 30, y: 18 },
+        ],
+        backgroundColor: "rgba(255, 99, 132, 1)",
+        borderColor: "rgba(255, 99, 132, 1)",
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        type: "linear", // Penting: Sumbu X harus bertipe 'linear'
+        position: "bottom",
+        ticks: {
+          color: "#ffffff", // Mengubah warna teks label sumbu X (kategori)
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.2)", // Mengubah warna grid sumbu X menjadi transparan putih
+        },
+      },
+      y: {
+        type: "linear", // Penting: Sumbu Y harus bertipe 'linear'
+        ticks: {
+          color: "#ffffff", // Mengubah warna teks label sumbu X (kategori)
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.2)", // Mengubah warna grid sumbu X menjadi transparan putih
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          color: "#ffffff",
+        },
+      },
+    },
+  };
+
+  return (
+    <div style={{ width: "100%" }}>
+      <Scatter data={data} options={options as any} />
+    </div>
+  );
+}
+
+export function Chart5() {
+  const data = {
+    datasets: [
+      {
+        label: "Titik Data",
+        data: [
+          { x: 10, y: 20 },
+          { x: 15, y: 10 },
+          { x: 5, y: 15 },
+          { x: 25, y: 22 },
+          { x: 30, y: 18 },
+        ],
+        backgroundColor: "rgba(255, 99, 132, 1)",
+        borderColor: "rgba(255, 99, 132, 1)",
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        type: "linear", // Penting: Sumbu X harus bertipe 'linear'
+        position: "bottom",
+        ticks: {
+          color: "#ffffff", // Mengubah warna teks label sumbu X (kategori)
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.2)", // Mengubah warna grid sumbu X menjadi transparan putih
+        },
+      },
+      y: {
+        type: "linear", // Penting: Sumbu Y harus bertipe 'linear'
+        ticks: {
+          color: "#ffffff", // Mengubah warna teks label sumbu X (kategori)
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.2)", // Mengubah warna grid sumbu X menjadi transparan putih
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          color: "#ffffff",
+        },
+      },
+    },
+  };
+
+  return (
+    <div style={{ width: "100%" }}>
+      <Scatter data={data} options={options as any} />
     </div>
   );
 }
