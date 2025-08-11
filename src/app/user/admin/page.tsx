@@ -50,8 +50,10 @@ export function Saldo() {
   const dataWithSaldo = Data.reduce((acc: any[], current, index) => {
     const debit = Number(current.debit) || 0;
     const kredit = Number(current.kredit) || 0;
+    const kb_kas = Number(current.kb_kas) || 0;
     const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
-    let operate = kredit - debit;
+    const totalDebit = debit + kb_kas;
+    let operate = kredit - totalDebit;
     operate += prevSaldo;
     const Saldo = operate;
     acc.push({
@@ -62,25 +64,73 @@ export function Saldo() {
   }, []);
 
   useEffect(() => {
-    for (let index = 0; index > dataWithSaldo.length; index++) {
-      console.log("data = ", dataWithSaldo[index]);
-      if (dataWithSaldo[index].id == dataWithSaldo.length) {
-        setSaldo(dataWithSaldo[index].Saldo);
-        console.log("datawithsaldo = ", dataWithSaldo[index].Saldo);
-      }
+    const dataSaldo = dataWithSaldo[dataWithSaldo.length - 1];
+    if (dataSaldo) {
+      setSaldo(dataSaldo.Saldo);
     }
-    console.log("saldo = ", Saldo);
   });
   return <>Rp. {FormatNumber(Number(Saldo))}</>;
 }
 
 export function Chart1() {
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Mengelompokkan data berdasarkan tanggal menggunakan `reduce`
+  const groupedData = Data.reduce((acc, current) => {
+    const tanggal = current.tanggal;
+    const debit = Number(current.debit) || 0;
+    const kredit = Number(current.kredit) || 0;
+    const kb_kas = Number(current.kb_kas) || 0;
+
+    if (!acc[tanggal]) {
+      // Jika tanggal belum ada, inisialisasi entri baru
+      acc[tanggal] = {
+        tanggal: tanggal,
+        debit: 0,
+        kredit: 0,
+        kb_kas: 0,
+      };
+    }
+
+    // Tambahkan nilai dari item saat ini ke total yang sudah ada
+    acc[tanggal].debit += debit;
+    acc[tanggal].kredit += kredit;
+    acc[tanggal].kb_kas += kb_kas;
+
+    return acc;
+  }, {});
+
+  // Mengubah objek menjadi array dan menghitung saldo
+  const dataWithSaldo = (Object.values(groupedData) as any[]).reduce(
+    (acc: any[], current, index) => {
+      const totalDebit = current.debit + current.kb_kas;
+      const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
+      const Saldo = prevSaldo + current.kredit - totalDebit;
+
+      acc.push({
+        ...current,
+        totalDebit,
+        Saldo,
+      });
+
+      return acc;
+    },
+    []
+  );
+
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
+    labels: dataWithSaldo.map((item) => item.tanggal),
     datasets: [
       {
-        label: "Penjualan Bulanan",
-        data: [33, 53, 85, 41, 44, 65],
+        label: "Total Saldo",
+        data: dataWithSaldo.map((item) => item.Saldo),
         fill: false,
         backgroundColor: "rgb(75, 192, 192)",
         borderColor: "rgba(75, 192, 192, 0.6)",
@@ -125,12 +175,50 @@ export function Chart1() {
 }
 
 export function Chart2() {
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Filter data untuk menghilangkan entri dengan identity_uk = "-"
+  const filteredData = Data.filter((item) => item.identity_uk !== "-");
+
+  const groupedData = filteredData.reduce((acc, current) => {
+    // Pastikan nama proyek tidak kosong atau null
+    const proyekName = current.identity_uk;
+
+    // Cek apakah proyek sudah ada di objek pengelompokan
+    if (!acc[proyekName]) {
+      // Jika belum ada, inisialisasi entri baru
+      acc[proyekName] = {
+        proyek: proyekName,
+        totalDebit: 0,
+      };
+    }
+
+    // Tambahkan nilai debit ke totalDebit yang sudah ada
+    const debit = Number(current.debit) || 0;
+    const kb_kas = Number(current.kb_kas) || 0;
+    acc[proyekName].totalDebit += debit + kb_kas;
+
+    return acc;
+  }, {});
+
+  const dataProyek = Object.values(groupedData) as {
+    proyek: string;
+    totalDebit: number;
+  }[];
+
   const data = {
-    labels: ["Red", "Blue", "Yellow"],
+    labels: dataProyek.map((item) => item.proyek),
     datasets: [
       {
         label: "Jumlah Suara",
-        data: [300, 50, 100],
+        data: dataProyek.map((item) => item.totalDebit),
         backgroundColor: [
           "rgba(255, 99, 132, 0.8)",
           "rgba(54, 162, 235, 0.8)",
@@ -166,12 +254,60 @@ export function Chart2() {
 }
 
 export function Chart3() {
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Filter data untuk menghilangkan entri dengan instansi = "-"
+  const filteredData = Data.filter((item) => item.instansi !== "-");
+
+  // Mengelompokkan data berdasarkan instansi menggunakan `reduce`
+  const groupedData = filteredData.reduce((acc, current) => {
+    const instansi = current.instansi;
+    const debit = Number(current.debit) || 0;
+    const kb_kas = Number(current.kb_kas) || 0;
+
+    if (!acc[instansi]) {
+      // Jika instansi belum ada, inisialisasi entri baru
+      acc[instansi] = {
+        instansi: instansi,
+        debit: 0,
+        kb_kas: 0,
+      };
+    }
+
+    // Tambahkan nilai dari item saat ini ke total yang sudah ada
+    acc[instansi].debit += debit;
+    acc[instansi].kb_kas += kb_kas;
+
+    return acc;
+  }, {});
+
+  // Mengubah objek menjadi array dan menghitung Debit
+  const dataWithDebit = (Object.values(groupedData) as any[]).reduce(
+    (acc: any[], current) => {
+      const totalDebit = current.debit + current.kb_kas;
+      acc.push({
+        ...current,
+        totalDebit,
+      });
+
+      return acc;
+    },
+    []
+  );
+
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
+    labels: dataWithDebit.map((item) => item.instansi),
     datasets: [
       {
-        label: "Penjualan Bulanan",
-        data: [12, 19, 3, 5, 2, 3, 5],
+        label: "",
+        data: dataWithDebit.map((item) => item.totalDebit),
         backgroundColor: [
           "rgba(255, 99, 132, 0.8)",
           "rgba(54, 162, 235, 0.8)",
@@ -197,6 +333,7 @@ export function Chart3() {
     responsive: true,
     plugins: {
       legend: {
+        display: false,
         position: "top",
         labels: {
           color: "#ffffff",
@@ -231,21 +368,41 @@ export function Chart3() {
 }
 
 export function Chart4() {
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Filter data
+  const filteredData = Data.filter((item) => item.identity_uk == "buku_barang");
+
+  const datasets = filteredData.map((item, index) => {
+    // Anda bisa mengganti warna sesuai kebutuhan
+    const colors = [
+      "rgba(255, 99, 132, 1)",
+      "rgba(54, 162, 235, 1)",
+      "rgba(255, 206, 86, 1)",
+      "rgba(105, 181, 95, 1)",
+      "rgba(36, 115, 52, 1)",
+      "rgba(124, 35, 124, 1)",
+      "rgba(21, 124, 42, 1)",
+    ];
+    const colorIndex = index % colors.length;
+
+    return {
+      label: item.uraian, // Label untuk setiap titik data
+      data: [{ x: item.volume, y: item.harga_satuan }], // Menggunakan index dan harga_satuan
+      backgroundColor: colors[colorIndex],
+      borderColor: colors[colorIndex],
+    };
+  });
+
   const data = {
-    datasets: [
-      {
-        label: "Titik Data",
-        data: [
-          { x: 10, y: 20 },
-          { x: 15, y: 10 },
-          { x: 5, y: 15 },
-          { x: 25, y: 22 },
-          { x: 30, y: 18 },
-        ],
-        backgroundColor: "rgba(255, 99, 132, 1)",
-        borderColor: "rgba(255, 99, 132, 1)",
-      },
-    ],
+    datasets: datasets,
   };
 
   const options = {
@@ -274,6 +431,7 @@ export function Chart4() {
     plugins: {
       legend: {
         position: "top",
+        display: false,
         labels: {
           color: "#ffffff",
         },
@@ -289,21 +447,58 @@ export function Chart4() {
 }
 
 export function Chart5() {
+  const [Data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Filter data
+  const filteredData = Data.filter((item) => item.identity_uk == "buku_jasa");
+
+  // Hitung grand_total secara berurutan
+  const dataWithGrandTotal = filteredData.reduce(
+    (acc: any[], current, index) => {
+      const debit = Number(current.debit) || 0;
+      const prevGrandTotal = index > 0 ? acc[index - 1].grand_total : 0;
+      const grandTotal = prevGrandTotal + debit;
+
+      acc.push({
+        ...current,
+        grandTotal, // tambahkan field baru
+      });
+
+      return acc;
+    },
+    []
+  );
+
+  const datasets = dataWithGrandTotal.map((item, index) => {
+    // Anda bisa mengganti warna sesuai kebutuhan
+    const colors = [
+      "rgba(255, 99, 132, 1)",
+      "rgba(54, 162, 235, 1)",
+      "rgba(255, 206, 86, 1)",
+      "rgba(105, 181, 95, 1)",
+      "rgba(36, 115, 52, 1)",
+      "rgba(124, 35, 124, 1)",
+      "rgba(21, 124, 42, 1)",
+    ];
+    const colorIndex = index % colors.length;
+
+    return {
+      label: item.uraian, // Label untuk setiap titik data
+      data: [{ x: item.kb_kas, y: item.grandTotal }], // Menggunakan index dan harga_satuan
+      backgroundColor: colors[colorIndex],
+      borderColor: colors[colorIndex],
+    };
+  });
+
   const data = {
-    datasets: [
-      {
-        label: "Titik Data",
-        data: [
-          { x: 10, y: 20 },
-          { x: 15, y: 10 },
-          { x: 5, y: 15 },
-          { x: 25, y: 22 },
-          { x: 30, y: 18 },
-        ],
-        backgroundColor: "rgba(255, 99, 132, 1)",
-        borderColor: "rgba(255, 99, 132, 1)",
-      },
-    ],
+    datasets: datasets,
   };
 
   const options = {
@@ -332,6 +527,7 @@ export function Chart5() {
     plugins: {
       legend: {
         position: "top",
+        display: false,
         labels: {
           color: "#ffffff",
         },

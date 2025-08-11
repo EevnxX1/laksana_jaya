@@ -25,8 +25,8 @@ export function SelectInstansi({ ...rest }: InputSelectInstansi) {
         ~Pilih Instansi~
       </option>
       {instansi.map((item) => (
-        <option key={item.id} value={item.instansi} className="text-black">
-          {item.instansi}
+        <option key={item.id} value={item.post} className="text-black">
+          {item.post}
         </option>
       ))}
     </SelectTbl>

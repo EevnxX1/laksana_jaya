@@ -24,12 +24,9 @@ export default function page() {
       .catch((err) => console.error(err));
   }, []);
 
-  const dataTh = ["", "No", "POST", "Nama Pekerjaan", "Instansi", "Action"];
+  const dataTh = ["No", "POST", "Nama Pekerjaan", "Instansi", "Action"];
 
   const dataTd = data.map((row, index) => [
-    <div className="flex justify-center px-2">
-      <input type="checkbox" className="w-4 h-4" />
-    </div>,
     index + 1,
     row.post,
     row.nama_pekerjaan,

@@ -3,9 +3,14 @@ import React, { useState, useEffect } from "react";
 import TabelBukuKasKecil from "@/app/ui/admin/buku_kas_kecil/tbl_bkk";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPenToSquare,
+  faCircleXmark,
+  faMagnifyingGlass,
+  faPrint,
+} from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FormatNumber } from "@/app/component/format_number";
@@ -20,31 +25,49 @@ interface BukuKasKecil {
   pekerjaan: string;
   debit: string;
   kredit: string;
+  kb_kas: number;
 }
 
 export default function page() {
   const [data, setData] = useState<BukuKasKecil[]>([]);
-  const [total, setTotal] = useState("");
-  const router = useRouter();
+  const [keyword, setKeyword] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/bkk") // endpoint dari Laravel
-      .then((res) => res.json())
-      .then(setData)
-      .catch((err) => console.error(err));
-  }, []);
-
-  useEffect(() => {
-    let kredit = 0;
-    let debit = 0;
-    for (let index = 0; index < data.length; index++) {
-      kredit += Number(data[index].kredit); // pastikan dikonversi ke number
-      debit += Number(data[index].debit); // pastikan dikonversi ke number
+  const fetchData = async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (keyword) params.append("keyword", keyword);
+    if (startDate && endDate) {
+      params.append("start_date", startDate);
+      params.append("end_date", endDate);
+    } else if (startDate || endDate) {
+      toast.error("Tolong Isi Kedua Tanggal Input");
     }
-    const totalSaldo = kredit - debit;
-    setTotal(String(totalSaldo));
-    console.log(totalSaldo);
-  });
+    const apiUrl = `http://127.0.0.1:8000/api/bkk?${params.toString()}`;
+
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      setData(data); // Update state dengan data hasil pencarian
+    } catch (error) {
+      console.error("Gagal mengambil data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    fetchData(); // Panggil fungsi fetching saat form disubmit
+  };
+
+  // --- useEffect untuk Fetching Data ---
+  // Kode ini akan mengambil data awal saat komponen dimuat
+  useEffect(() => {
+    fetchData();
+  }, []); // Array kosong berarti hanya berjalan sekali saat mount
 
   const dataTh = [
     "No",
@@ -62,12 +85,15 @@ export default function page() {
   const dataWithSaldo = data.reduce((acc: any[], current, index) => {
     const debit = Number(current.debit) || 0;
     const kredit = Number(current.kredit) || 0;
+    const kb_kas = Number(current.kb_kas) || 0;
     const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
-    let operate = kredit - debit;
+    const totalDebit = debit + kb_kas;
+    let operate = kredit - totalDebit;
     operate += prevSaldo;
     const Saldo = operate;
     acc.push({
       ...current,
+      totalDebit,
       Saldo, // tambahkan field baru
     });
     return acc;
@@ -79,7 +105,7 @@ export default function page() {
     row.uraian,
     row.instansi,
     row.pekerjaan,
-    "Rp." + FormatNumber(row.debit),
+    "Rp." + FormatNumber(row.totalDebit),
     "Rp." + FormatNumber(row.kredit),
     "Rp." + FormatNumber(row.Saldo),
     <div className="flex justify-center">
@@ -143,7 +169,175 @@ export default function page() {
 
   return (
     <TabelBukuKasKecil>
-      <Table source="info" dataTh={dataTh} dataTd={dataTd} />
+      <div className="w-full">
+        <div className="text-white mb-7">
+          <h1 className="font-bold text-2xl mb-3">Buku Kas Kecil</h1>
+          <div className="flex justify-between">
+            <SearchByKeyword
+              keyword={keyword}
+              setKeyword={setKeyword}
+              handleSearch={handleSearch}
+            />
+            <div className="flex gap-x-5 order-1">
+              <Link
+                href="/user/admin/buku_kas_kecil/uang_masuk"
+                className="h-fit self-end"
+              >
+                <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
+                  <FontAwesomeIcon icon={faPrint} className="w-5" />
+                  <span className="ml-1">Uang Masuk</span>
+                </button>
+              </Link>
+              <div>
+                <input
+                  type="checkbox"
+                  id="dropdown-link"
+                  className="peer hidden"
+                />
+                <label htmlFor="dropdown-link">
+                  <div className="select-none flex items-center gap-x-2 cursor-pointer px-3 py-1 bg-[#FF3535] rounded-lg text-gray-700 font-medium">
+                    <FontAwesomeIcon icon={faPrint} className="w-5" />
+                    <span className="">Uang Keluar</span>
+                    <Image
+                      src={"/assets/dropdown.png"}
+                      alt=""
+                      width={20}
+                      height={20}
+                    ></Image>
+                  </div>
+                </label>
+                <div className="hidden peer-checked:flex flex-col absolute z-50">
+                  <Link
+                    href={"buku_kas_kecil/uang_keluar/buku_kantor"}
+                    className="px-6 py-2 bg-black/90 hover:bg-green-400"
+                  >
+                    Buku Kantor
+                  </Link>
+                  <Link
+                    href={"buku_kas_kecil/uang_keluar/proyek_barang"}
+                    className="px-6 py-2 bg-black/90 hover:bg-green-400"
+                  >
+                    Proyek Barang
+                  </Link>
+                  <Link
+                    href={"buku_kas_kecil/uang_keluar/proyek_jasa"}
+                    className="px-6 py-2 bg-black/90 hover:bg-green-400"
+                  >
+                    Proyek Jasa
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="mb-5 flex justify-between">
+            <div className="flex flex-col">
+              <h1 className="font-bold text-xl mb-3 text-white">
+                Data Transaksi Kas Kecil
+              </h1>
+              <div>
+                <SearchByDate
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                  handleSearch={handleSearch}
+                />
+              </div>
+            </div>
+            <Link
+              href={`/cetak_bkk?keyword=${keyword}&start_date=${startDate}&end_date=${endDate}`}
+              className="h-fit self-end"
+              target="_blank"
+            >
+              <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
+                <FontAwesomeIcon icon={faPrint} className="w-5" />
+                <span className="ml-1">Cetak Transaksi</span>
+              </button>
+            </Link>
+          </div>
+          {/* 2. Kondisional render untuk loading atau data */}
+          {loading ? (
+            <p>Memuat data...</p>
+          ) : dataWithSaldo.length > 0 ? (
+            <Table source="info" dataTh={dataTh} dataTd={dataTd} />
+          ) : (
+            <p>Tidak ada data ditemukan.</p>
+          )}
+        </div>
+      </div>
     </TabelBukuKasKecil>
+  );
+}
+
+export function SearchByKeyword({
+  keyword,
+  setKeyword,
+  handleSearch,
+}: {
+  keyword: any;
+  setKeyword: any;
+  handleSearch: any;
+}) {
+  return (
+    <form onSubmit={handleSearch} className="flex space-x-5 order-2">
+      <div className="flex flex-col">
+        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
+        <input
+          type="text"
+          name=""
+          placeholder="Cari Data"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
+        />
+      </div>
+      <button
+        type="submit"
+        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
+      >
+        <span className="mr-1">Cari</span>{" "}
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
+      </button>
+    </form>
+  );
+}
+
+export function SearchByDate({
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  handleSearch,
+}: {
+  startDate: any;
+  setStartDate: any;
+  endDate: any;
+  setEndDate: any;
+  handleSearch: any;
+}) {
+  return (
+    <form onSubmit={handleSearch} className="flex gap-x-3">
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
+      />
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
+      />
+      <button
+        type="submit"
+        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
+      >
+        <span className="mr-1">Cari</span>{" "}
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
+      </button>
+    </form>
   );
 }
