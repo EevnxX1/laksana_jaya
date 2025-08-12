@@ -56,7 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (res.status === 201 || res.status === 200) {
       setToken(data.access_token); // Simpan ke state
       localStorage.setItem("token", data.access_token); // Persist di browser
-      localStorage.setItem("user_id", data.user.id);
       localStorage.setItem("user_name", data.user.name);
       localStorage.setItem("role", data.user.role);
       const role_check = localStorage.getItem("role");

@@ -97,7 +97,7 @@ export function TablePrint({ dataTh, dataTd }: TableOuput) {
             {dataTh?.map((th, index) => (
               <th
                 key={index}
-                className="pb-2 whitespace-pre-wrap text-sm w-20 break-all"
+                className="pb-2 whitespace-pre-wrap text-sm w-20 break-words"
               >
                 {th}
               </th>

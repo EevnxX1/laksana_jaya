@@ -3,8 +3,12 @@ import { useState, useEffect } from "react";
 import TabelBukuProyekJasa from "@/app/ui/admin/buku_proyek_jasa/tbl_bpj";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPenToSquare,
+  faPrint,
+  faMagnifyingGlass,
+  faCircleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { toast } from "react-toastify";
 
@@ -17,12 +21,36 @@ interface BukuProyekBarang {
 
 export default function page() {
   const [data, setData] = useState<BukuProyekBarang[]>([]);
+  const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (keyword) params.append("keyword", keyword);
+    const apiUrl = `http://127.0.0.1:8000/api/bp_jasa?${params.toString()}`;
+
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      setData(data); // Update state dengan data hasil pencarian
+    } catch (error) {
+      console.error("Gagal mengambil data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    fetchData(); // Panggil fungsi fetching saat form disubmit
+  };
+
+  // --- useEffect untuk Fetching Data ---
+  // Kode ini akan mengambil data awal saat komponen dimuat
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/bp_jasa") // endpoint dari Laravel
-      .then((res) => res.json())
-      .then(setData)
-      .catch((err) => console.error(err));
-  }, []);
+    fetchData();
+  }, []); // Array kosong berarti hanya berjalan sekali saat mount
 
   const dataTh = ["No", "POST", "Nama Pekerjaan", "Instansi", "Action"];
 
@@ -67,7 +95,71 @@ export default function page() {
 
   return (
     <TabelBukuProyekJasa>
-      <Table source="info" dataTh={dataTh} dataTd={dataTd} />
+      <div className="text-white mb-5">
+        <h1 className="font-bold text-2xl mb-3">BUKU PROYEK - JASA</h1>
+        <div className="flex justify-between">
+          <SearchKeyword
+            keyword={keyword}
+            setKeyword={setKeyword}
+            handleSearch={handleSearch}
+          />
+          <div className="flex gap-x-5">
+            <Link
+              href={"buku_proyek_jasa/tambah_data"}
+              className="h-fit self-end"
+            >
+              <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
+                <FontAwesomeIcon icon={faPrint} className="w-5" />
+                <span className="ml-1">Tambah Proyek</span>
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h1 className="font-bold text-xl mb-3 text-white">
+          Tabel Data Pengadaan Jasa
+        </h1>
+        {loading ? (
+          <p>Memuat data...</p>
+        ) : data.length > 0 ? (
+          <Table source="info" dataTh={dataTh} dataTd={dataTd} />
+        ) : (
+          <p>Tidak ada data ditemukan.</p>
+        )}
+      </div>
     </TabelBukuProyekJasa>
+  );
+}
+
+export function SearchKeyword({
+  keyword,
+  setKeyword,
+  handleSearch,
+}: {
+  keyword: any;
+  setKeyword: any;
+  handleSearch: any;
+}) {
+  return (
+    <form onSubmit={handleSearch} className="flex space-x-5">
+      <div className="flex flex-col">
+        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="Cari Data"
+          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
+        />
+      </div>
+      <button
+        type="submit"
+        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
+      >
+        <span className="mr-1">Cari</span>{" "}
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
+      </button>
+    </form>
   );
 }
