@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
 
     fetchDataWithAuth();
-  }, []);
+  }, [NameUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

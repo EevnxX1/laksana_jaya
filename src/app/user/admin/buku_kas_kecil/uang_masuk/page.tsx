@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import FormBkkUangMasuk from "@/app/ui/admin/buku_kas_kecil/uang_masuk/form_uang_masuk";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FormatPrice } from "@/app/component/format_number";
 
-export default function page() {
+export default function Page() {
   const Kb_kas = "0";
   const Upah = "0";
   const Material_kaskecil = "0";
@@ -90,7 +90,7 @@ export default function page() {
     }
   };
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 

@@ -1,9 +1,4 @@
 "use client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { faPrint } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
-import { LinkImageNotaKantor } from "@/app/user/admin/buku_kantor/page";
 
 interface TabelUi {
   children: React.ReactNode;

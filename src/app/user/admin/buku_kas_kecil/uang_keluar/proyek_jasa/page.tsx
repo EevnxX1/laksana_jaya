@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJasa";
-import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
+import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { FormatPrice, FormatNumber } from "@/app/component/format_number";
+import { FormatNumber } from "@/app/component/format_number";
+import { SelectPostJasa } from "@/app/component/SelectPost";
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
   const Id_bpbarang = "0";
   const Identity = "uang_keluar";
@@ -116,13 +117,13 @@ export default function page() {
       >
         Uraian
       </InputTbl>
-      <SelectPost
+      <SelectPostJasa
         onPostSelected={(post) => {
           setId_bpjasa(post.id);
           setInstansi(post.instansi);
           setPekerjaan(post.nama_pekerjaan);
         }}
-      ></SelectPost>
+      ></SelectPostJasa>
       <InputTbl
         classPage="mb-7"
         type="number"
@@ -185,52 +186,5 @@ export default function page() {
         Jumlah
       </InputTbl>
     </FormBkkJasa>
-  );
-}
-
-interface InputSelectPost
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onPostSelected?: (post: any) => void; // fungsi callback
-}
-
-export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
-  const [post, setpost] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<string>("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/api/bp_jasa") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setpost(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedId(selectedId);
-
-    // Temukan data Post berdasarkan id yang dipilih
-    const selectedPost = post.find((item) => item.id === parseInt(selectedId));
-    if (onPostSelected && selectedPost) {
-      onPostSelected(selectedPost);
-    }
-  };
-
-  return (
-    <SelectTbl
-      {...rest}
-      value={selectedId}
-      onChange={handleChange}
-      classPage="mb-7"
-      labelValue="Post"
-    >
-      <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Post~
-      </option>
-      {post.map((item) => (
-        <option key={item.id} value={item.id} className="text-black">
-          {item.post}
-        </option>
-      ))}
-    </SelectTbl>
   );
 }

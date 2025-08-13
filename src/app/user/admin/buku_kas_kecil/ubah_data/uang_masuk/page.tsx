@@ -6,7 +6,13 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
-export default function page() {
+interface IsivalueUangMasuk {
+  tanggal: string;
+  uraian: string;
+  kredit: string;
+}
+
+export default function Page() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id_bp");
   const Kb_kas = "0";
@@ -30,7 +36,7 @@ export default function page() {
   const [Nota, setNota] = useState("");
   const [Debit, setDebit] = useState("0");
   const [Kredit, setKredit] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<IsivalueUangMasuk[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function page() {
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];

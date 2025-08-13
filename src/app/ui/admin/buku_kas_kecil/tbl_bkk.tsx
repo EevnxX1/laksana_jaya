@@ -1,11 +1,4 @@
 "use client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { faPrint } from "@fortawesome/free-solid-svg-icons";
-import {
-  SearchByKeyword,
-  SearchByDate,
-} from "@/app/user/admin/buku_kas_kecil/page";
 import Link from "next/link";
 import Image from "next/image";
 

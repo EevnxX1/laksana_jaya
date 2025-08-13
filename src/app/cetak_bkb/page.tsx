@@ -6,9 +6,22 @@ import { FormatNumber } from "@/app/component/format_number";
 import Image from "next/image";
 import { TablePrint } from "../component/table";
 
+interface BkbData {
+  id: number;
+  tanggal: string;
+  kd_transaksi: string;
+  uraian: string;
+  debit: string;
+  kredit: string;
+}
+
+interface BkbDataWithSaldo extends BkbData {
+  Saldo: number;
+}
+
 export default function PrintPage() {
   const searchParams = useSearchParams();
-  const [bkbData, setBkbData] = useState<any[]>([]);
+  const [bkbData, setBkbData] = useState<BkbData[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Ambil parameter dari URL
@@ -25,7 +38,9 @@ export default function PrintPage() {
         params.append("start_date", startDate);
         params.append("end_date", endDate);
       }
-      const apiUrl = `http://127.0.0.1:8000/api/bkb?${params.toString()}`;
+      const apiUrl = `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/bkb?${params.toString()}`;
 
       try {
         const response = await fetch(apiUrl);
@@ -50,19 +65,22 @@ export default function PrintPage() {
   }, [bkbData, loading]);
 
   // Logika untuk menghitung saldo (sama seperti di page.tsx)
-  const dataWithSaldo = bkbData.reduce((acc: any[], current, index) => {
-    const debit = Number(current.debit) || 0;
-    const kredit = Number(current.kredit) || 0;
-    const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
-    let operate = kredit - debit;
-    operate += prevSaldo;
-    const Saldo = operate;
-    acc.push({
-      ...current,
-      Saldo, // tambahkan field baru
-    });
-    return acc;
-  }, []);
+  const dataWithSaldo = bkbData.reduce<BkbDataWithSaldo[]>(
+    (acc, current, index) => {
+      const debit = Number(current.debit) || 0;
+      const kredit = Number(current.kredit) || 0;
+      const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
+      let operate = kredit - debit;
+      operate += prevSaldo;
+      const Saldo = operate;
+      acc.push({
+        ...current,
+        Saldo, // tambahkan field baru
+      });
+      return acc;
+    },
+    []
+  );
 
   const dataTh = [
     "No",
@@ -79,9 +97,9 @@ export default function PrintPage() {
     row.tanggal,
     row.kd_transaksi,
     row.uraian,
-    "Rp." + FormatNumber(row.debit),
-    "Rp." + FormatNumber(row.kredit),
-    "Rp." + FormatNumber(row.Saldo),
+    "Rp." + FormatNumber(Number(row.debit)),
+    "Rp." + FormatNumber(Number(row.kredit)),
+    "Rp." + FormatNumber(Number(row.Saldo)),
   ]);
 
   return (

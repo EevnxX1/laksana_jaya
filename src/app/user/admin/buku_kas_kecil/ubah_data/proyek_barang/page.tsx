@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { SelectPostBarangEdit } from "@/app/component/SelectPost";
 
 interface IsiValueBukuBarang {
   id: number;
@@ -21,7 +22,7 @@ interface IsiValueBukuBarang {
   nota: string;
 }
 
-export default function page() {
+export default function Page() {
   const Id_bpjasa = "0";
   const Identity = "uang_keluar";
   const Identity_uk = "buku_barang";
@@ -55,11 +56,11 @@ export default function page() {
   }, [Harga_satuan, Volume]);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -107,10 +108,13 @@ export default function page() {
     }
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${id}`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       console.log("idbpbarang = " + Id_bpbarang);
       console.log("instansi = " + Instansi);
@@ -151,13 +155,14 @@ export default function page() {
       >
         Nama Barang
       </InputTbl>
-      <SelectPost
+      <SelectPostBarangEdit
+        id_post={id}
         onPostSelected={(post) => {
           setId_bpbarang(post.id);
           setInstansi(post.instansi);
           setPekerjaan(post.label_pekerjaan);
         }}
-      ></SelectPost>
+      ></SelectPostBarangEdit>
       <InputTbl
         classPage="mb-7"
         type="text"
@@ -254,65 +259,5 @@ export default function page() {
         Harga Total
       </InputTbl>
     </FormBkkUbahData>
-  );
-}
-
-interface InputSelectPost
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onPostSelected?: (post: any) => void; // fungsi callback
-}
-
-export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
-  const [post, setpost] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<string>("");
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
-  const [Data, setData] = useState<IsiValueBukuBarang[]>([]);
-
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
-      .then((res) => res.json())
-      .then(setData)
-      .catch((err) => console.error(err));
-    fetch("http://localhost:8000/api/bp_barang") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setpost(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedId(selectedId);
-
-    // Temukan data Post berdasarkan id yang dipilih
-    const selectedPost = post.find((item) => item.id === parseInt(selectedId));
-    if (onPostSelected && selectedPost) {
-      onPostSelected(selectedPost);
-    }
-  };
-
-  return (
-    <SelectTbl
-      {...rest}
-      value={selectedId}
-      onChange={handleChange}
-      classPage="mb-7"
-      labelValue="Post"
-    >
-      {post.map((item) =>
-        item.id == Data[0].id_bpbarang ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post + " (Before)"}
-          </option>
-        ) : null
-      )}
-      {post.map((item) =>
-        item.id !== Data[0].id_bpbarang ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post}
-          </option>
-        ) : null
-      )}
-    </SelectTbl>
   );
 }

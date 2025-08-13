@@ -1,16 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TabelBukuProyekJasa from "@/app/ui/admin/buku_proyek_jasa/tbl_bpj";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
   faPrint,
-  faMagnifyingGlass,
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { SearchKeyword } from "@/app/component/SearchKeyword";
 
 interface BukuProyekBarang {
   id: number;
@@ -19,7 +19,7 @@ interface BukuProyekBarang {
   instansi: string;
 }
 
-export default function page() {
+export default function Page() {
   const [data, setData] = useState<BukuProyekBarang[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,9 @@ export default function page() {
     setLoading(true);
     const params = new URLSearchParams();
     if (keyword) params.append("keyword", keyword);
-    const apiUrl = `http://127.0.0.1:8000/api/bp_jasa?${params.toString()}`;
+    const apiUrl = `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/bp_jasa?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);
@@ -41,16 +43,18 @@ export default function page() {
     }
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchData(); // Panggil fungsi fetching saat form disubmit
   };
 
   // --- useEffect untuk Fetching Data ---
   // Kode ini akan mengambil data awal saat komponen dimuat
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchData();
   }, []); // Array kosong berarti hanya berjalan sekali saat mount
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const dataTh = ["No", "POST", "Nama Pekerjaan", "Instansi", "Action"];
 
@@ -59,7 +63,7 @@ export default function page() {
     row.post,
     row.nama_pekerjaan,
     row.instansi,
-    <div className="flex justify-center">
+    <div key={row.id} className="flex justify-center">
       <Link
         href={`buku_proyek_jasa/detail?id_bp=${row.id}`}
         className={"text-green-800"}
@@ -129,37 +133,5 @@ export default function page() {
         )}
       </div>
     </TabelBukuProyekJasa>
-  );
-}
-
-export function SearchKeyword({
-  keyword,
-  setKeyword,
-  handleSearch,
-}: {
-  keyword: any;
-  setKeyword: any;
-  handleSearch: any;
-}) {
-  return (
-    <form onSubmit={handleSearch} className="flex space-x-5">
-      <div className="flex flex-col">
-        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Cari Data"
-          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
-        />
-      </div>
-      <button
-        type="submit"
-        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
-      >
-        <span className="mr-1">Cari</span>{" "}
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
-      </button>
-    </form>
   );
 }

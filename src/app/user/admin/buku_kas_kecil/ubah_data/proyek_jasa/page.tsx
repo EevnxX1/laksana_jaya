@@ -1,13 +1,30 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
-import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
+import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { SelectPostJasaEdit } from "@/app/component/SelectPost";
 
-export default function page() {
+interface IsiValueBukuJasa {
+  id: string;
+  id_bpjasa: string;
+  instansi: string;
+  pekerjaan: string;
+  tanggal: string;
+  uraian: string;
+  kb_kas: string;
+  upah: string;
+  material_kaskecil: string;
+  material_kasbesar: string;
+  non_material: string;
+  dircost: string;
+  nota: string;
+}
+
+export default function Page() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id_bp");
   const router = useRouter();
@@ -32,14 +49,14 @@ export default function page() {
   const [Nota, setNota] = useState<File | null>(null);
   const [Gambar, setGambar] = useState("");
   const [Debit, setDebit] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<IsiValueBukuJasa[]>([]);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -105,10 +122,13 @@ export default function page() {
     }
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${id}`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       console.log("instansi = " + Instansi);
       console.log("idbpjasa = " + Id_bpjasa);
@@ -149,13 +169,14 @@ export default function page() {
       >
         Uraian
       </InputTbl>
-      <SelectPost
+      <SelectPostJasaEdit
+        id_post={id}
         onPostSelected={(post) => {
           setId_bpjasa(post.id);
           setInstansi(post.instansi);
           setPekerjaan(post.nama_pekerjaan);
         }}
-      ></SelectPost>
+      ></SelectPostJasaEdit>
       <InputTbl
         classPage="mb-7"
         type="number"
@@ -233,65 +254,5 @@ export default function page() {
         Jumlah
       </InputTbl>
     </FormBkkUbahData>
-  );
-}
-
-interface InputSelectPost
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onPostSelected?: (post: any) => void; // fungsi callback
-}
-
-export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
-  const [post, setpost] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<string>("");
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
-  const [Data, setData] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
-      .then((res) => res.json())
-      .then(setData)
-      .catch((err) => console.error(err));
-    fetch("http://localhost:8000/api/bp_jasa") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setpost(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedId(selectedId);
-
-    // Temukan data Post berdasarkan id yang dipilih
-    const selectedPost = post.find((item) => item.id === parseInt(selectedId));
-    if (onPostSelected && selectedPost) {
-      onPostSelected(selectedPost);
-    }
-  };
-
-  return (
-    <SelectTbl
-      {...rest}
-      value={selectedId}
-      onChange={handleChange}
-      classPage="mb-7"
-      labelValue="Post"
-    >
-      {post.map((item) =>
-        item.id == Data[0].id_bpjasa ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post + " (Before)"}
-          </option>
-        ) : null
-      )}
-      {post.map((item) =>
-        item.id !== Data[0].id_bpjasa ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post}
-          </option>
-        ) : null
-      )}
-    </SelectTbl>
   );
 }

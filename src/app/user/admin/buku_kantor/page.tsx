@@ -2,24 +2,16 @@
 import TabelBukuKantor from "@/app/ui/admin/buku_kantor/tbl_bk";
 import { Table } from "@/app/component/table";
 import { useState, useEffect } from "react";
-import { LinkImage } from "@/app/component/link_image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faMagnifyingGlass,
   faPenToSquare,
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { LinkImageNotaKantor } from "@/app/component/LinkImageNotaKantor";
 import { toast } from "react-toastify";
 import { FormatNumber } from "@/app/component/format_number";
-
-// export default function page() {
-//   return (
-//     <TabelBukuKantor>
-//       <TabelDataKantor />
-//     </TabelBukuKantor>
-//   );
-// }
+import { SearchKeyword } from "@/app/component/SearchKeyword";
 
 interface IsiTabelDataKantor {
   id: number;
@@ -28,7 +20,7 @@ interface IsiTabelDataKantor {
   debit: string;
 }
 
-export default function page() {
+export default function Page() {
   const [Data, setData] = useState<IsiTabelDataKantor[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +29,9 @@ export default function page() {
     setLoading(true);
     const params = new URLSearchParams();
     if (keyword) params.append("keyword", keyword);
-    const apiUrl = `http://127.0.0.1:8000/api/bkk/detail_kantor?${params.toString()}`;
+    const apiUrl = `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/bkk/detail_kantor?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);
@@ -50,16 +44,18 @@ export default function page() {
     }
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchData(); // Panggil fungsi fetching saat form disubmit
   };
 
   // --- useEffect untuk Fetching Data ---
   // Kode ini akan mengambil data awal saat komponen dimuat
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchData();
   }, []); // Array kosong berarti hanya berjalan sekali saat mount
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const dataTh = ["No", "Tanggal", "Uraian", "Jumlah", "Action"];
   const dataTd = Data.map((list, index) => [
@@ -67,7 +63,7 @@ export default function page() {
     list.tanggal,
     list.uraian,
     "Rp. " + FormatNumber(Number(list.debit)),
-    <div className="flex justify-center">
+    <div key={list.id} className="flex justify-center">
       <Link
         href={`buku_kas_kecil/ubah_data/buku_kantor?id_bp=${list.id}`}
         className={"text-green-800"}
@@ -79,7 +75,7 @@ export default function page() {
         onClick={() => {
           const konfirmasi = confirm("Yakin ingin hapus?");
           if (konfirmasi) {
-            fetch(`http://127.0.0.1:8000/api/bkk/${list.id}`, {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/${list.id}`, {
               method: "DELETE",
             })
               .then((res) => {
@@ -136,67 +132,5 @@ export default function page() {
         </div>
       </div>
     </TabelBukuKantor>
-  );
-}
-
-export function SearchKeyword({
-  keyword,
-  setKeyword,
-  handleSearch,
-}: {
-  keyword: any;
-  setKeyword: any;
-  handleSearch: any;
-}) {
-  return (
-    <form onSubmit={handleSearch} className="flex space-x-5">
-      <div className="flex flex-col">
-        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Cari Data"
-          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
-        />
-      </div>
-      <button
-        type="submit"
-        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
-      >
-        <span className="mr-1">Cari</span>{" "}
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
-      </button>
-    </form>
-  );
-}
-
-interface TabelBarangNotaBelanja {
-  id: number;
-  nota: string;
-  uraian: string;
-}
-
-export function LinkImageNotaKantor() {
-  const [data, setData] = useState<TabelBarangNotaBelanja[]>([]);
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkk/detail_kantor`) // endpoint dari Laravel
-      .then((res) => res.json())
-      .then(setData)
-      .catch((err) => console.error(err));
-  }, []);
-  return (
-    <>
-      {data.map((list, index) =>
-        list.nota !== "-" ? (
-          <LinkImage
-            key={index}
-            text={list.uraian}
-            href=""
-            srcImage={list.nota}
-          />
-        ) : null
-      )}
-    </>
   );
 }

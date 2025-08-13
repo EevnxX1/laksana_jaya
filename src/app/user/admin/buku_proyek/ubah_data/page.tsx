@@ -1,39 +1,29 @@
 "use client";
 import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
-import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
-import { useEffect, useState } from "react";
+import { InputTbl } from "@/app/component/input_tbl";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { FormatPrice, FormatNumber } from "@/app/component/format_number";
+import { SelectInstansi } from "@/app/component/SelectInstansi";
 
-interface InputSelectInstansi
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {}
-
-export function SelectInstansi({ ...rest }: InputSelectInstansi) {
-  const [instansi, setInstansi] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/api/instansi") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setInstansi(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-  return (
-    <SelectTbl {...rest} classPage="mb-7" labelValue="Instansi">
-      <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Instansi~
-      </option>
-      {instansi.map((item) => (
-        <option key={item.id} value={item.instansi} className="text-black">
-          {item.instansi}
-        </option>
-      ))}
-    </SelectTbl>
-  );
+interface BpBarang {
+  id: number;
+  tanggal: string;
+  nomor_sp: string;
+  tgl_sp: string;
+  instansi: string;
+  pekerjaan: string;
+  sub_kegiatan: string;
+  tahun_anggaran: string;
+  mulai_pekerjaan: string;
+  selesai_pekerjaan: string;
+  label_pekerjaan: string;
+  nilai_pekerjaan: string;
 }
 
-export default function page() {
+export default function Page() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id_bpb");
   const [Tanggal, setTanggal] = useState("");
@@ -48,15 +38,15 @@ export default function page() {
   const [Label_pekerjaan, setLabel_pekerjaan] = useState("");
   const [Nilai_pekerjaan, setNilai_pekerjaan] = useState("");
   const [FormatNilai_pekerjaan, setFormatNilai_pekerjaan] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<BpBarang[]>([]);
   const router = useRouter(); // Hook navigasi
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bp_barang/detail/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bp_barang/detail/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -72,7 +62,7 @@ export default function page() {
       setSelesai_pekerjaan(proyek.selesai_pekerjaan);
       setLabel_pekerjaan(proyek.label_pekerjaan);
       setNilai_pekerjaan(proyek.nilai_pekerjaan);
-      const formattedValue = FormatNumber(proyek.nilai_pekerjaan);
+      const formattedValue = FormatNumber(Number(proyek.nilai_pekerjaan));
       setFormatNilai_pekerjaan(formattedValue);
     }
   }, [Data]);
@@ -101,7 +91,7 @@ export default function page() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/bp_barang/ubah_data/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bp_barang/ubah_data/${id}`,
         {
           method: "POST",
           body: formData, // ⬅️ Tanpa headers manual
@@ -120,7 +110,7 @@ export default function page() {
     }
   };
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 

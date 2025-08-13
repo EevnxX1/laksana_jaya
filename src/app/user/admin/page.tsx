@@ -16,7 +16,6 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { color } from "chart.js/helpers";
 
 // Daftarkan komponen Chart.js yang akan digunakan
 ChartJS.register(
@@ -31,12 +30,41 @@ ChartJS.register(
   Legend
 );
 
+interface Bkk {
+  id: number;
+  id_bpbarang: number;
+  id_bpjasa: number;
+  identity: string;
+  identity_uk: string;
+  tanggal: string;
+  instansi: string;
+  pekerjaan: string;
+  uraian: string;
+  harga_satuan: number;
+  volume: number;
+  satuan: string;
+  kb_kas: string;
+  upah: string;
+  material_kaskecil: string;
+  material_kasbesar: string;
+  non_material: string;
+  dircost: string;
+  grand_total: string;
+  nota: string;
+  debit: string;
+  kredit: string;
+}
+
+interface BkkWithSaldo extends Bkk {
+  Saldo: number;
+}
+
 export default function page() {
   return <DashboardTemplate />;
 }
 
 export function Saldo() {
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<Bkk[]>([]);
   const [Saldo, setSaldo] = useState("");
 
   useEffect(() => {
@@ -47,7 +75,7 @@ export function Saldo() {
   }, []);
 
   // Hitung Saldo secara berurutan
-  const dataWithSaldo = Data.reduce((acc: any[], current, index) => {
+  const dataWithSaldo = Data.reduce<BkkWithSaldo[]>((acc, current, index) => {
     const debit = Number(current.debit) || 0;
     const kredit = Number(current.kredit) || 0;
     const kb_kas = Number(current.kb_kas) || 0;
@@ -66,7 +94,7 @@ export function Saldo() {
   useEffect(() => {
     const dataSaldo = dataWithSaldo[dataWithSaldo.length - 1];
     if (dataSaldo) {
-      setSaldo(dataSaldo.Saldo);
+      setSaldo(String(dataSaldo.Saldo));
     }
   });
   return <>Rp. {FormatNumber(Number(Saldo))}</>;

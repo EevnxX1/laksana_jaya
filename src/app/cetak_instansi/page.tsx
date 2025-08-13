@@ -2,13 +2,21 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { FormatNumber } from "@/app/component/format_number";
 import Image from "next/image";
 import { TablePrint } from "../component/table";
 
+interface Instansi {
+  id: number;
+  instansi: string;
+  post: string;
+  alamat_instansi: string;
+  no_telp: string;
+  npwp: string;
+}
+
 export default function PrintPage() {
   const searchParams = useSearchParams();
-  const [InstansiData, setInstansiData] = useState<any[]>([]);
+  const [InstansiData, setInstansiData] = useState<Instansi[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Ambil parameter dari URL
@@ -25,7 +33,9 @@ export default function PrintPage() {
         params.append("start_date", startDate);
         params.append("end_date", endDate);
       }
-      const apiUrl = `http://127.0.0.1:8000/api/instansi?${params.toString()}`;
+      const apiUrl = `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/instansi?${params.toString()}`;
 
       try {
         const response = await fetch(apiUrl);

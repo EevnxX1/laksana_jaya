@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import TabelBukuProyek from "@/app/ui/admin/buku_proyek/tbl_bp";
 import { Table } from "@/app/component/table";
+import { SearchKeyword } from "@/app/component/SearchKeyword";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
   faPrint,
-  faMagnifyingGlass,
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
@@ -19,7 +19,7 @@ interface BukuProyekBarang {
   instansi: string;
 }
 
-export default function page() {
+export default function Page() {
   const [Data, setData] = useState<BukuProyekBarang[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,9 @@ export default function page() {
     setLoading(true);
     const params = new URLSearchParams();
     if (keyword) params.append("keyword", keyword);
-    const apiUrl = `http://127.0.0.1:8000/api/bp_barang?${params.toString()}`;
+    const apiUrl = `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/bp_barang?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);
@@ -41,16 +43,18 @@ export default function page() {
     }
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchData(); // Panggil fungsi fetching saat form disubmit
   };
 
   // --- useEffect untuk Fetching Data ---
   // Kode ini akan mengambil data awal saat komponen dimuat
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchData();
   }, []); // Array kosong berarti hanya berjalan sekali saat mount
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const dataTh = ["No", "POST", "Nama Pekerjaan", "Instansi", "Action"];
 
@@ -59,7 +63,7 @@ export default function page() {
     row.post,
     row.pekerjaan,
     row.instansi,
-    <div className="flex justify-center">
+    <div key={row.id} className="flex justify-center">
       <Link
         href={`buku_proyek/detail?id_bp=${row.id}`}
         className={"text-green-800"}
@@ -71,9 +75,12 @@ export default function page() {
         onClick={() => {
           const konfirmasi = confirm("Yakin ingin hapus?");
           if (konfirmasi) {
-            fetch(`http://127.0.0.1:8000/api/bp_barang/hapus_data/${row.id}`, {
-              method: "DELETE",
-            })
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/bp_barang/hapus_data/${row.id}`,
+              {
+                method: "DELETE",
+              }
+            )
               .then((res) => {
                 if (!res.ok) throw new Error("Gagal hapus");
                 toast.success("Data Buku Proyek Barang Berhasil Dihapus");
@@ -126,37 +133,5 @@ export default function page() {
         )}
       </div>
     </TabelBukuProyek>
-  );
-}
-
-export function SearchKeyword({
-  keyword,
-  setKeyword,
-  handleSearch,
-}: {
-  keyword: any;
-  setKeyword: any;
-  handleSearch: any;
-}) {
-  return (
-    <form onSubmit={handleSearch} className="flex space-x-5">
-      <div className="flex flex-col">
-        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Cari Data"
-          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
-        />
-      </div>
-      <button
-        type="submit"
-        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
-      >
-        <span className="mr-1">Cari</span>{" "}
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
-      </button>
-    </form>
   );
 }

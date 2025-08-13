@@ -6,26 +6,26 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-export default function page() {
+export default function Page() {
   const searchParams = useSearchParams();
   const [Idbpbarang, setIdbpbarang] = useState("");
   const [NomerRekening, setNomerRekening] = useState("");
   const [Ket, setKet] = useState("");
   const router = useRouter();
+  const id = searchParams.get("id_bp");
 
   useEffect(() => {
-    const id = searchParams.get("id_bp");
     if (id) {
       setIdbpbarang(id);
     }
-  });
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/api/kdrekening/tambah_data",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/kdrekening/tambah_data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

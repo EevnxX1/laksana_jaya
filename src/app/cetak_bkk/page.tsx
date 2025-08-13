@@ -20,6 +20,11 @@ interface BukuKasKecil {
   identity_uk: string;
 }
 
+interface BkkWithSaldo extends BukuKasKecil {
+  Saldo: number;
+  totalDebit: number;
+}
+
 export default function PrintPage() {
   const searchParams = useSearchParams();
   const [bkkData, setBkkData] = useState<BukuKasKecil[]>([]);
@@ -39,7 +44,9 @@ export default function PrintPage() {
         params.append("start_date", startDate);
         params.append("end_date", endDate);
       }
-      const apiUrl = `http://127.0.0.1:8000/api/bkk?${params.toString()}`;
+      const apiUrl = `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/api/bkk?${params.toString()}`;
 
       try {
         const response = await fetch(apiUrl);
@@ -64,18 +71,21 @@ export default function PrintPage() {
   }, [bkkData, loading]);
 
   // Logika untuk menghitung saldo (sama seperti di page.tsx)
-  const dataWithSaldo = bkkData.reduce((acc: any[], current, index) => {
-    const debit = Number(current.debit) || 0;
-    const kredit = Number(current.kredit) || 0;
-    const kb_kas = Number(current.kb_kas) || 0;
-    const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
-    const totalDebit = debit + kb_kas;
-    let operate = kredit - totalDebit;
-    operate += prevSaldo;
-    const Saldo = operate;
-    acc.push({ ...current, totalDebit, Saldo });
-    return acc;
-  }, []);
+  const dataWithSaldo = bkkData.reduce<BkkWithSaldo[]>(
+    (acc, current, index) => {
+      const debit = Number(current.debit) || 0;
+      const kredit = Number(current.kredit) || 0;
+      const kb_kas = Number(current.kb_kas) || 0;
+      const prevSaldo = index > 0 ? acc[index - 1].Saldo : 0;
+      const totalDebit = debit + kb_kas;
+      let operate = kredit - totalDebit;
+      operate += prevSaldo;
+      const Saldo = operate;
+      acc.push({ ...current, totalDebit, Saldo });
+      return acc;
+    },
+    []
+  );
 
   const dataTh = [
     "No",
@@ -95,7 +105,7 @@ export default function PrintPage() {
     row.instansi,
     row.pekerjaan,
     "Rp." + FormatNumber(row.totalDebit),
-    "Rp." + FormatNumber(row.kredit),
+    "Rp." + FormatNumber(Number(row.kredit)),
     "Rp." + FormatNumber(row.Saldo),
   ]);
 

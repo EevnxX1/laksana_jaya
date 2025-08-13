@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 
-export default function page() {
+export default function Page() {
   const searchParams = useSearchParams();
   const [Idbpbarang, setIdbpbarang] = useState("");
   const [Idrekening, setIdrekening] = useState("");
@@ -17,15 +17,15 @@ export default function page() {
   const [HargaSatuan, setHargaSatuan] = useState("");
   const [HargaTotal, setHargaTotal] = useState("");
   const router = useRouter();
+  const id_bp = searchParams.get("id_bp");
+  const id_kr = searchParams.get("id_kr");
 
   useEffect(() => {
-    const id_bp = searchParams.get("id_bp");
-    const id_kr = searchParams.get("id_kr");
     if (id_bp && id_kr) {
       setIdbpbarang(id_bp);
       setIdrekening(id_kr);
     }
-  });
+  }, [id_bp, id_kr]);
 
   useEffect(() => {
     const total = Number(HargaSatuan) * Number(Volume);
@@ -37,7 +37,7 @@ export default function page() {
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/api/barangdpa/tambah_data",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/barangdpa/tambah_data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

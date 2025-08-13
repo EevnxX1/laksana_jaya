@@ -1,38 +1,13 @@
 "use client";
 import FormTambahData from "@/app/ui/admin/buku_proyek/tambah_data";
-import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
-import { useEffect, useState } from "react";
+import { InputTbl } from "@/app/component/input_tbl";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FormatPrice } from "@/app/component/format_number";
+import { SelectInstansi } from "@/app/component/SelectInstansi";
 
-interface InputSelectInstansi
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {}
-
-export function SelectInstansi({ ...rest }: InputSelectInstansi) {
-  const [instansi, setInstansi] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/api/instansi") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setInstansi(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-  return (
-    <SelectTbl {...rest} classPage="mb-7" labelValue="Instansi">
-      <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Instansi~
-      </option>
-      {instansi.map((item) => (
-        <option key={item.id} value={item.post} className="text-black">
-          {item.post}
-        </option>
-      ))}
-    </SelectTbl>
-  );
-}
-
-export default function page() {
+export default function Page() {
   const [Tanggal, setTanggal] = useState("");
   const [Nomor_sp, setNomor_sp] = useState("");
   const [Tgl_sp, setTgl_sp] = useState("");
@@ -51,7 +26,7 @@ export default function page() {
     const now = new Date();
     const formatted = now.toISOString().split("T")[0]; // Format: YYYY-MM-DD
     setTanggal(formatted);
-  }, []);
+  }, [Tanggal]);
 
   // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
   useEffect(() => {
@@ -67,7 +42,7 @@ export default function page() {
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/api/bp_barang/tambah_data",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bp_barang/tambah_data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -99,7 +74,7 @@ export default function page() {
     }
   };
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 

@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import FormBkkKantor from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekKantor";
-import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
+import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FormatPrice } from "@/app/component/format_number";
 
-export default function page() {
+export default function Page() {
   const Id_bpjasa = "0";
   const Identity = "uang_keluar";
   const Identity_uk = "buku_kantor";
@@ -43,7 +43,7 @@ export default function page() {
     setDebit(cleanedDebit);
   }, [FormatDebit]);
 
-  const handleInputChange = (event: any) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 
@@ -88,10 +88,13 @@ export default function page() {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_keluar", {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/uang_keluar`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Data berhasil disimpan");
@@ -162,52 +165,5 @@ export default function page() {
         Pekerjaan
       </InputTbl>
     </FormBkkKantor>
-  );
-}
-
-interface InputSelectPost
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  onPostSelected?: (post: any) => void; // fungsi callback
-}
-
-export function SelectPost({ onPostSelected, ...rest }: InputSelectPost) {
-  const [post, setpost] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<string>("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/api/bp_barang") // sesuaikan URL
-      .then((res) => res.json())
-      .then((data) => setpost(data))
-      .catch((err) => console.error("Gagal ambil data:", err));
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedId(selectedId);
-
-    // Temukan data Post berdasarkan id yang dipilih
-    const selectedPost = post.find((item) => item.id === parseInt(selectedId));
-    if (onPostSelected && selectedPost) {
-      onPostSelected(selectedPost);
-    }
-  };
-
-  return (
-    <SelectTbl
-      {...rest}
-      value={selectedId}
-      onChange={handleChange}
-      classPage="mb-7"
-      labelValue="Post"
-    >
-      <option defaultValue={"Anda Belum Memilih"} className="text-black">
-        ~Pilih Instansi~
-      </option>
-      {post.map((item) => (
-        <option key={item.id} value={item.id} className="text-black">
-          {item.post}
-        </option>
-      ))}
-    </SelectTbl>
   );
 }
