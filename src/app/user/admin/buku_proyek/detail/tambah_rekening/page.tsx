@@ -1,20 +1,21 @@
 "use client";
 import TambahRekening from "@/app/ui/admin/buku_proyek/detail/tambah_rekening";
 import { InputTbl } from "@/app/component/input_tbl";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function Page() {
-  const searchParams = useSearchParams();
+  const [id, setId] = useState<string | null>(null);
   const [Idbpbarang, setIdbpbarang] = useState("");
   const [NomerRekening, setNomerRekening] = useState("");
   const [Ket, setKet] = useState("");
   const router = useRouter();
-  const id = searchParams.get("id_bp");
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bp"));
+
     if (id) {
       setIdbpbarang(id);
     }

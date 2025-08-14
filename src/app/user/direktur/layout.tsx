@@ -26,12 +26,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       try {
         // 3. Tambahkan Authorization header ke permintaan fetch
-        const response = await fetch("http://127.0.0.1:8000/api/user", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         // Tangani jika respons tidak ok (misal 401 Unauthorized)
         if (response.status == 201 || response.status == 200) {
           console.log("Data berhasil terautentikasi");
@@ -51,7 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
 
     fetchDataWithAuth();
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,13 +63,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
     if (konfirmasi) {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/logout`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/logout`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (res.status === 201 || res.status === 200) {
           toast.success("Anda Berhasil Logout");

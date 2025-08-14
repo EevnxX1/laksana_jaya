@@ -8,12 +8,23 @@ import {
   faPenToSquare,
   faCircleXmark,
   faUserPlus,
-  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
+import { SearchKeyword } from "@/app/component/SearchKeyword";
 
-export default function page() {
-  const [Data, setData] = useState<any[]>([]);
+interface Users {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  alamat: string;
+  no_hp: string;
+  role: string;
+}
+
+export default function Page() {
+  const [Data, setData] = useState<Users[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +32,9 @@ export default function page() {
     setLoading(true);
     const params = new URLSearchParams();
     if (keyword) params.append("keyword", keyword);
-    const apiUrl = `http://127.0.0.1:8000/api/user/all?${params.toString()}`;
+    const apiUrl = `${
+      process.env.NEXT_PUBLIC_API_URL
+    }/api/user/all?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);
@@ -34,16 +47,18 @@ export default function page() {
     }
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchData(); // Panggil fungsi fetching saat form disubmit
   };
 
   // --- useEffect untuk Fetching Data ---
   // Kode ini akan mengambil data awal saat komponen dimuat
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     fetchData();
   }, []); // Array kosong berarti hanya berjalan sekali saat mount
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const dataTh = ["No", "Nama", "Alamat", "No Hp", "Role", "Action"];
   const dataTd = Data.map((list, index) => [
@@ -52,7 +67,7 @@ export default function page() {
     list.alamat,
     list.no_hp,
     list.role,
-    <div className="flex justify-center">
+    <div key={list.id} className="flex justify-center">
       <Link
         href={`data_user/ubah_data?id_user=${list.id}`}
         className={"text-green-800"}
@@ -64,7 +79,7 @@ export default function page() {
         onClick={() => {
           const konfirmasi = confirm(`Yakin Ingin Hapus Akun ${list.name}?`);
           if (konfirmasi) {
-            fetch(`http://127.0.0.1:8000/api/deleted/${list.id}`, {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/deleted/${list.id}`, {
               method: "DELETE",
             })
               .then((res) => {
@@ -90,7 +105,7 @@ export default function page() {
       <div className="text-white mb-5">
         <h1 className="font-bold text-2xl mb-3">DATA USER</h1>
         <div className="flex justify-between">
-          <SearchByKeyword
+          <SearchKeyword
             keyword={keyword}
             setKeyword={setKeyword}
             handleSearch={handleSearch}
@@ -116,37 +131,5 @@ export default function page() {
         )}
       </div>
     </TabelUser>
-  );
-}
-
-export function SearchByKeyword({
-  keyword,
-  setKeyword,
-  handleSearch,
-}: {
-  keyword: any;
-  setKeyword: any;
-  handleSearch: any;
-}) {
-  return (
-    <form onSubmit={handleSearch} className="flex space-x-3">
-      <div className="flex flex-col">
-        {/* <label className="mb-[2px]">Pilih Tanggal Mulai:</label> */}
-        <input
-          type="text"
-          placeholder="Cari Data"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="bg-white/40 px-3 py-1 rounded-lg cursor-pointer text-gray-700"
-        />
-      </div>
-      <button
-        type="submit"
-        className="flex items-center cursor-pointer self-end px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium"
-      >
-        <span className="mr-1">Cari</span>{" "}
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="w-4" />
-      </button>
-    </form>
   );
 }

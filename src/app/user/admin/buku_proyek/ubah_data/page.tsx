@@ -4,7 +4,6 @@ import { InputTbl } from "@/app/component/input_tbl";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { FormatPrice, FormatNumber } from "@/app/component/format_number";
 import { SelectInstansi } from "@/app/component/SelectInstansi";
 
@@ -24,8 +23,7 @@ interface BpBarang {
 }
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bpb");
+  const [id, setId] = useState<string | null>(null);
   const [Tanggal, setTanggal] = useState("");
   const [Nomor_sp, setNomor_sp] = useState("");
   const [Tgl_sp, setTgl_sp] = useState("");
@@ -42,6 +40,9 @@ export default function Page() {
   const router = useRouter(); // Hook navigasi
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bpb"));
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bp_barang/detail/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)

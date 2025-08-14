@@ -17,7 +17,7 @@ interface AuthContextType {
     username: string,
     email: string,
     password: string,
-    role: String
+    role: string
   ) => Promise<void>; // Fungsi register
   logout: () => void; // Fungsi logout
 }
@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType>({
 
 // Provider komponen yang membungkus seluruh aplikasi
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const url = "http://127.0.0.1:8000/api/";
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/`;
   const [token, setToken] = useState<string | null>(null); // State menyimpan token
   const router = useRouter(); // Hook navigasi
 
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     username: string,
     email: string,
     password: string,
-    role: String
+    role: string
   ) => {
     const res = await fetch(`${url}register`, {
       method: "POST",

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 
-export default function page() {
+export default function Page() {
   const [Instansi, setInstansi] = useState("");
   const [Post, setPost] = useState("");
   const [AlamatInstansi, setAlamatInstansi] = useState("");
@@ -24,7 +24,7 @@ export default function page() {
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8000/api/instansi/tambah_data",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/instansi/tambah_data`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

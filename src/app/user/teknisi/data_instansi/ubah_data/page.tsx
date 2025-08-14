@@ -4,25 +4,35 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
-import { useSearchParams } from "next/navigation";
 
-export default function page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_instansi");
+interface Instansi {
+  id: number;
+  instansi: string;
+  post: string;
+  alamat_instansi: string;
+  no_telp: string;
+  npwp: string;
+}
+
+export default function Page() {
+  const [id, setId] = useState<string | null>(null);
   const [Instansi, setInstansi] = useState("");
   const [Post, setPost] = useState("");
   const [AlamatInstansi, setAlamatInstansi] = useState("");
   const [NoTelp, setNoTelp] = useState("");
   const [Npwp, setNpwp] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<Instansi[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/instansi/${id}`) // endpoint dari Laravel
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_instansi"));
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/instansi/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];

@@ -329,9 +329,7 @@ export function TabelProyekDetail1({ id }: { id: string }) {
                   </div>
                 </td>
               </tr>
-            ) : (
-              <tr className="border-b-1 border-gray-400"></tr>
-            ),
+            ) : null,
           ])}
           <tr className="border-b-1 border-gray-400">
             <td className={"py-4 pl-10"} colSpan={8}>

@@ -4,7 +4,6 @@ import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahDa
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SelectPostBarangEdit } from "@/app/component/SelectPost";
 
@@ -35,8 +34,7 @@ export default function Page() {
   const Dircost = "0";
   const Grand_total = "0";
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
+  const [id, setId] = useState<string | null>(null);
   const [Data, setData] = useState<IsiValueBukuBarang[]>([]);
   const [Id_bpbarang, setId_bpbarang] = useState("");
   const [Tanggal, setTanggal] = useState("");
@@ -56,6 +54,9 @@ export default function Page() {
   }, [Harga_satuan, Volume]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bp"));
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)

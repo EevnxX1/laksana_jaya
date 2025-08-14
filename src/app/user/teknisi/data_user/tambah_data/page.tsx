@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 
-export default function page() {
+export default function Page() {
   const [Name, setName] = useState("");
   const [Username, setUsername] = useState("");
   const [Email, setEmail] = useState("");
@@ -19,19 +19,22 @@ export default function page() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: Name,
-          username: Username,
-          email: Email,
-          password: Password,
-          alamat: Alamat,
-          no_hp: NoHp,
-          role: Role,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: Name,
+            username: Username,
+            email: Email,
+            password: Password,
+            alamat: Alamat,
+            no_hp: NoHp,
+            role: Role,
+          }),
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("User berhasil Di Tambahkan");

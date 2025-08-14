@@ -1,13 +1,11 @@
 "use client";
 import TambahBarang from "@/app/ui/admin/buku_proyek/detail/tambah_barang";
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 
 export default function Page() {
-  const searchParams = useSearchParams();
   const [Idbpbarang, setIdbpbarang] = useState("");
   const [Idrekening, setIdrekening] = useState("");
   const [NamaBarang, setNamaBarang] = useState("");
@@ -17,15 +15,16 @@ export default function Page() {
   const [HargaSatuan, setHargaSatuan] = useState("");
   const [HargaTotal, setHargaTotal] = useState("");
   const router = useRouter();
-  const id_bp = searchParams.get("id_bp");
-  const id_kr = searchParams.get("id_kr");
 
   useEffect(() => {
-    if (id_bp && id_kr) {
-      setIdbpbarang(id_bp);
-      setIdrekening(id_kr);
+    const params = new URLSearchParams(window.location.search);
+    const cekIdBp = params.get("id_bp");
+    const cekIdKr = params.get("id_kr");
+    if (cekIdBp && cekIdKr) {
+      setIdbpbarang(cekIdBp);
+      setIdrekening(cekIdKr);
     }
-  }, [id_bp, id_kr]);
+  }, []);
 
   useEffect(() => {
     const total = Number(HargaSatuan) * Number(Volume);

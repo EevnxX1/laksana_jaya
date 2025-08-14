@@ -1,7 +1,6 @@
 // src/app/user/admin/buku_kas_kecil/cetak/page.tsx
 "use client";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { FormatNumber } from "@/app/component/format_number";
 import Image from "next/image";
 import { TablePrint } from "../component/table";
@@ -20,16 +19,15 @@ interface BkbDataWithSaldo extends BkbData {
 }
 
 export default function PrintPage() {
-  const searchParams = useSearchParams();
   const [bkbData, setBkbData] = useState<BkbData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Ambil parameter dari URL
-  const keyword = searchParams.get("keyword") || "";
-  const startDate = searchParams.get("start_date") || "";
-  const endDate = searchParams.get("end_date") || "";
-
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const keyword = params.get("keyword");
+    const startDate = params.get("start_date");
+    const endDate = params.get("end_date");
+
     const fetchDataAndPrint = async () => {
       setLoading(true);
       const params = new URLSearchParams();
@@ -54,7 +52,7 @@ export default function PrintPage() {
     };
 
     fetchDataAndPrint();
-  }, [keyword, startDate, endDate]); // Re-fetch jika parameter berubah
+  }, []); // Re-fetch jika parameter berubah
 
   // Gunakan useEffect ini untuk memunculkan dialog print setelah data dimuat
   useEffect(() => {

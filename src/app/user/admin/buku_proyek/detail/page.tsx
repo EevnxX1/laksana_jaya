@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   JudulPage,
   InputTabelProyekDetail,
@@ -11,8 +11,14 @@ import {
 } from "@/app/component/detail_barang";
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
+  const [id, setId] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cekId = params.get("id_bp");
+    if (cekId) setId(cekId);
+  }, [id]);
+
   return (
     <section className="relative mx-auto w-[91vw] rounded-xl bg-white/20 px-8 py-8">
       <h1 className="text-2xl font-semibold mb-5">

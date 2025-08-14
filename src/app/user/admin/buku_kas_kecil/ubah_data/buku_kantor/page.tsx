@@ -4,7 +4,6 @@ import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahDa
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 interface IsiValueBukuKantor {
@@ -16,8 +15,7 @@ interface IsiValueBukuKantor {
 }
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
+  const [id, setId] = useState<string | null>(null);
   const Id_bpjasa = "0";
   const Identity = "uang_keluar";
   const Identity_uk = "buku_kantor";
@@ -44,6 +42,9 @@ export default function Page() {
   const [Debit, setDebit] = useState("");
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bp"));
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)

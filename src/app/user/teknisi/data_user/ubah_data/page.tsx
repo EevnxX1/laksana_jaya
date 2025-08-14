@@ -1,14 +1,23 @@
 "use client";
 import { FormTambahData } from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahData";
-import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputTbl, SelectTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 
-export default function page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_user");
+interface Users {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  alamat: string;
+  no_hp: string;
+  role: string;
+}
+
+export default function Page() {
+  const [id, setId] = useState<string | null>(null);
   const [Name, setName] = useState("");
   const [Username, setUsername] = useState("");
   const [Email, setEmail] = useState("");
@@ -16,15 +25,18 @@ export default function page() {
   const [Alamat, setAlamat] = useState("");
   const [NoHp, setNoHp] = useState("");
   const [Role, setRole] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<Users[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/user/detail/${id}`) // endpoint dari Laravel
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_user"));
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/detail/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -51,10 +63,13 @@ export default function page() {
     formData.append("role", Role);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/updated/${id}`, {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/updated/${id}`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Data User berhasil Di Ubah");

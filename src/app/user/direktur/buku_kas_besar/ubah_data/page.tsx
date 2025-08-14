@@ -5,11 +5,18 @@ import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { FormatPrice, FormatNumber } from "@/app/component/format_number";
-import { useSearchParams } from "next/navigation";
 
-export default function page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bkb");
+interface Bkb {
+  id: number;
+  tanggal: string;
+  kd_transaksi: string;
+  uraian: string;
+  debit: number;
+  kredit: number;
+}
+
+export default function Page() {
+  const [id, setId] = useState<string | null>(null);
   const [Tanggal, setTanggal] = useState("");
   const [KdTransaksi, setKdTransaksi] = useState("");
   const [Uraian, setUraian] = useState("");
@@ -17,15 +24,18 @@ export default function page() {
   const [FormatDebit, setFormatDebit] = useState("");
   const [Kredit, setKredit] = useState("");
   const [FormatKredit, setFormatKredit] = useState("");
-  const [Data, setData] = useState<any[]>([]);
+  const [Data, setData] = useState<Bkb[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/bkb/${id}`) // endpoint dari Laravel
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bkb"));
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkb/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -33,9 +43,9 @@ export default function page() {
       setTanggal(proyek.tanggal);
       setKdTransaksi(proyek.kd_transaksi);
       setUraian(proyek.uraian);
-      setDebit(proyek.debit);
+      setDebit(String(proyek.debit));
       setFormatDebit(FormatNumber(proyek.debit));
-      setKredit(proyek.kredit);
+      setKredit(String(proyek.kredit));
       setFormatKredit(FormatNumber(proyek.kredit));
     }
   }, [Data]);
@@ -56,10 +66,13 @@ export default function page() {
     formData.append("kredit", Kredit);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/bkb/ubah_data/${id}`, {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkb/ubah_data/${id}`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Transaksi berhasil Diubah");
@@ -84,7 +97,7 @@ export default function page() {
     setKredit(cleanedNilaiKredit);
   }, [FormatKredit]);
 
-  const handleInputChange1 = (event: any) => {
+  const handleInputChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 
@@ -95,7 +108,7 @@ export default function page() {
     setFormatDebit(formattedValue);
   };
 
-  const handleInputChange2 = (event: any) => {
+  const handleInputChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 

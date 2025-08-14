@@ -4,7 +4,6 @@ import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahDa
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 
 interface IsivalueUangMasuk {
   tanggal: string;
@@ -13,8 +12,7 @@ interface IsivalueUangMasuk {
 }
 
 export default function Page() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id_bp");
+  const [id, setId] = useState<string | null>(null);
   const Kb_kas = "0";
   const Upah = "0";
   const Material_kaskecil = "0";
@@ -40,6 +38,9 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setId(params.get("id_bp"));
+
     fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)

@@ -6,7 +6,7 @@ import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { FormatPrice } from "@/app/component/format_number";
 
-export default function page() {
+export default function Page() {
   const [Tanggal, setTanggal] = useState("");
   const [KdTransaksi, setKdTransaksi] = useState("");
   const [Uraian, setUraian] = useState("");
@@ -31,17 +31,20 @@ export default function page() {
     console.log("Kredit = ", Kredit);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkb/tambah_data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tanggal: Tanggal,
-          kd_transaksi: KdTransaksi,
-          uraian: Uraian,
-          debit: Debit,
-          kredit: Kredit,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkb/tambah_data`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tanggal: Tanggal,
+            kd_transaksi: KdTransaksi,
+            uraian: Uraian,
+            debit: Debit,
+            kredit: Kredit,
+          }),
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Transaksi berhasil disimpan");
@@ -66,7 +69,7 @@ export default function page() {
     setKredit(cleanedNilaiKredit);
   }, [FormatKredit]);
 
-  const handleInputChange1 = (event: any) => {
+  const handleInputChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 
@@ -77,7 +80,7 @@ export default function page() {
     setFormatDebit(formattedValue);
   };
 
-  const handleInputChange2 = (event: any) => {
+  const handleInputChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Ambil nilai dari input saat ini
     const rawValue = event.target.value;
 
