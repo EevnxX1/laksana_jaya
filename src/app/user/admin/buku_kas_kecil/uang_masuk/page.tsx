@@ -50,33 +50,36 @@ export default function Page() {
     console.log("Format Kredit = ", FormatKredit);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_masuk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_bpbarang: Id_bpbarang,
-          id_bpjasa: Id_bpjasa,
-          identity: Identity,
-          identity_uk: Identity_uk,
-          tanggal: Tanggal,
-          instansi: Instansi,
-          pekerjaan: Pekerjaan,
-          uraian: Uraian,
-          harga_satuan: Harga_satuan,
-          volume: Volume,
-          satuan: Satuan,
-          nota: Nota,
-          debit: Debit,
-          kredit: Kredit,
-          kb_kas: Kb_kas,
-          upah: Upah,
-          material_kaskecil: Material_kaskecil,
-          material_kasbesar: Material_kasbesar,
-          non_material: Non_material,
-          dircost: Dircost,
-          grand_total: Grand_total,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/uang_masuk`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_bpbarang: Id_bpbarang,
+            id_bpjasa: Id_bpjasa,
+            identity: Identity,
+            identity_uk: Identity_uk,
+            tanggal: Tanggal,
+            instansi: Instansi,
+            pekerjaan: Pekerjaan,
+            uraian: Uraian,
+            harga_satuan: Harga_satuan,
+            volume: Volume,
+            satuan: Satuan,
+            nota: Nota,
+            debit: Debit,
+            kredit: Kredit,
+            kb_kas: Kb_kas,
+            upah: Upah,
+            material_kaskecil: Material_kaskecil,
+            material_kasbesar: Material_kasbesar,
+            non_material: Non_material,
+            dircost: Dircost,
+            grand_total: Grand_total,
+          }),
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Data berhasil disimpan");
