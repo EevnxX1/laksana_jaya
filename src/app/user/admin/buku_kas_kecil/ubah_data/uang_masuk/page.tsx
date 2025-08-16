@@ -41,7 +41,7 @@ export default function Page() {
     const params = new URLSearchParams(window.location.search);
     setId(params.get("id_bp"));
 
-    fetch(`http://127.0.0.1:8000/api/bkk/edit/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
@@ -106,7 +106,7 @@ export default function Page() {
     formData.append("nota", Nota);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/bkk/ubah_data/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${id}`, {
         method: "POST",
         body: formData, // ⬅️ Tanpa headers manual
       });

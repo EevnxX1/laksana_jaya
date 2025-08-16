@@ -63,7 +63,7 @@ export default function Page() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/instansi/ubah_data/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/instansi/ubah_data/${id}`,
         {
           method: "POST",
           body: formData, // ⬅️ Tanpa headers manual
