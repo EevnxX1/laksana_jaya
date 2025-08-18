@@ -51,13 +51,15 @@ export default function Page() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setId(params.get("id_bp"));
+    const currentId = params.get("id_bp"); // ambil langsung
+    if (!currentId) return;
+    setId(currentId);
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/edit/${currentId}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     const proyek = Data[0];

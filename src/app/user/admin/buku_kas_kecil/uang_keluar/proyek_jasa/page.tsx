@@ -78,10 +78,13 @@ export default function Page() {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/bkk/uang_keluar", {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/uang_keluar`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       console.log("instansi" + Instansi);
       console.log("idbpbarang" + Id_bpbarang);

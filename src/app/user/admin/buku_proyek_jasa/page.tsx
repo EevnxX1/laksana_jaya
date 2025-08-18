@@ -75,9 +75,12 @@ export default function Page() {
         onClick={() => {
           const konfirmasi = confirm("Yakin ingin hapus?");
           if (konfirmasi) {
-            fetch(`http://127.0.0.1:8000/api/bp_jasa/hapus_data/${row.id}`, {
-              method: "DELETE",
-            })
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/bp_jasa/hapus_data/${row.id}`,
+              {
+                method: "DELETE",
+              }
+            )
               .then((res) => {
                 if (!res.ok) throw new Error("Gagal hapus");
                 toast.success("Data Buku Proyek Jasa Berhasil Dihapus");

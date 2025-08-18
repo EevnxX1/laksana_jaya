@@ -17,6 +17,27 @@ interface BpJasa {
   nilai_pekerjaan: string;
 }
 
+interface BkkBukuBarang {
+  id: number;
+  id_bpbarang: number;
+  id_bpjasa: number;
+  identity: string;
+  identity_uk: string;
+  tanggal: string;
+  uraian: string;
+  harga_satuan: string;
+  volume: string;
+  satuan: string;
+  debit: string;
+  kredit: string;
+  kb_kas: string;
+  upah: string;
+  material_kaskecil: string;
+  material_kasbesar: string;
+  non_material: string;
+  dircost: string;
+}
+
 export default function Page() {
   const [id, setId] = useState<string | null>(null);
   const [Tanggal, setTanggal] = useState("");
@@ -27,17 +48,27 @@ export default function Page() {
   const [Sub_kegiatan, setSub_kegiatan] = useState("");
   const [FormatNilai_pekerjaan, setFormatNilai_pekerjaan] = useState("");
   const [Data, setData] = useState<BpJasa[]>([]);
+  const [DataBkk, setDataBkk] = useState<BkkBukuBarang[]>([]);
   const router = useRouter(); // Hook navigasi
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setId(params.get("id_bpj"));
+    const currentId = params.get("id_bpj"); // ambil langsung
+    if (!currentId) return;
+    setId(currentId);
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bp_jasa/detail/${id}`) // endpoint dari Laravel
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bp_jasa/detail/${currentId}`) // endpoint dari Laravel
       .then((res) => res.json())
       .then(setData)
       .catch((err) => console.error(err));
-  }, [id]);
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/detail_jasa/${currentId}`) // endpoint dari Laravel
+      .then((res) => res.json())
+      .then(setDataBkk)
+      .catch((err) => console.error(err));
+  }, []);
+
+  console.log("data Bkk = ", DataBkk);
 
   useEffect(() => {
     const proyek = Data[0];
@@ -70,6 +101,8 @@ export default function Page() {
     formData.append("tahun_anggaran", Tahun_anggaran);
     formData.append("nilai_pekerjaan", Nilai_pekerjaan);
 
+    console.log("data Submit = ", formData);
+
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/bp_jasa/ubah_data/${id}`,
@@ -80,6 +113,52 @@ export default function Page() {
       );
 
       if (res.status === 201 || res.status === 200) {
+        // Update tabel bkk untuk setiap baris yang terkait
+        await Promise.all(
+          DataBkk.map((row) => {
+            const formData = new FormData();
+
+            // ambil semua key dari row
+            for (const key in row) {
+              if (
+                key !== "id" &&
+                key !== "created_at" &&
+                key !== "grand_total" &&
+                key !== "nota"
+              ) {
+                const typedKey = key as keyof typeof row;
+                const value = row[typedKey];
+                if (value !== undefined && value !== null) {
+                  formData.append(key, String(value));
+                }
+              }
+            }
+
+            // tambahin field baru
+            formData.append("instansi", Instansi);
+            formData.append("pekerjaan", Pekerjaan);
+
+            console.log(
+              "Mengirim data:",
+              Object.fromEntries(formData.entries())
+            );
+
+            return fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${row.id}`,
+              {
+                method: "POST",
+                body: formData, // tanpa Content-Type, biar otomatis multipart/form-data
+              }
+            )
+              .then((res) => {
+                console.log("Response untuk row", row.id, res);
+                return res.json();
+              })
+              .catch((err) => {
+                console.error("Error row", row.id, err);
+              });
+          })
+        );
         toast.success("Proyek Jasa berhasil Diubah");
         router.push("/user/admin/buku_proyek_jasa");
       } else {

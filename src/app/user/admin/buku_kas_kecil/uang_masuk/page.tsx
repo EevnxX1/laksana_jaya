@@ -207,7 +207,7 @@ export default function Page() {
         value={FormatKredit}
         onChange={handleInputChange}
       >
-        Kredit
+        Uang Masuk
       </InputTbl>
     </FormBkkUangMasuk>
   );

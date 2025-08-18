@@ -106,10 +106,13 @@ export default function Page() {
     formData.append("nota", Nota);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${id}`, {
-        method: "POST",
-        body: formData, // ⬅️ Tanpa headers manual
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bkk/ubah_data/${id}`,
+        {
+          method: "POST",
+          body: formData, // ⬅️ Tanpa headers manual
+        }
+      );
 
       if (res.status === 201 || res.status === 200) {
         toast.success("Transaksi berhasil Diubah");
@@ -227,7 +230,7 @@ export default function Page() {
         value={Kredit}
         onChange={(e) => setKredit(e.target.value)}
       >
-        Kredit
+        Uang Masuk
       </InputTbl>
     </FormBkkUbahData>
   );

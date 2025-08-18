@@ -148,20 +148,22 @@ export function SelectPostBarangEdit({
       classPage="mb-7"
       labelValue="Post"
     >
-      {post.map((item) =>
-        item.id == Data[0].id_bpbarang ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post + " (Before)"}
-          </option>
-        ) : null
-      )}
-      {post.map((item) =>
-        item.id !== Data[0].id_bpbarang ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post}
-          </option>
-        ) : null
-      )}
+      {Data.length > 0 &&
+        post.map((item) =>
+          item.id == Data[0].id_bpbarang ? (
+            <option key={item.id} value={item.id} className="text-black">
+              {item.post + " (Before)"}
+            </option>
+          ) : null
+        )}
+      {Data.length > 0 &&
+        post.map((item) =>
+          item.id !== Data[0].id_bpbarang ? (
+            <option key={item.id} value={item.id} className="text-black">
+              {item.post}
+            </option>
+          ) : null
+        )}
     </SelectTbl>
   );
 }
@@ -207,20 +209,22 @@ export function SelectPostJasaEdit({
       classPage="mb-7"
       labelValue="Post"
     >
-      {post.map((item) =>
-        item.id == Data[0].id_bpjasa ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post + " (Before)"}
-          </option>
-        ) : null
-      )}
-      {post.map((item) =>
-        item.id !== Data[0].id_bpjasa ? (
-          <option key={item.id} value={item.id} className="text-black">
-            {item.post}
-          </option>
-        ) : null
-      )}
+      {Data.length > 0 &&
+        post.map((item) =>
+          item.id == Data[0].id_bpjasa ? (
+            <option key={item.id} value={item.id} className="text-black">
+              {item.post + " (Before)"}
+            </option>
+          ) : null
+        )}
+      {Data.length > 0 &&
+        post.map((item) =>
+          item.id !== Data[0].id_bpjasa ? (
+            <option key={item.id} value={item.id} className="text-black">
+              {item.post}
+            </option>
+          ) : null
+        )}
     </SelectTbl>
   );
 }

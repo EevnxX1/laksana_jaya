@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { FormatNumber } from "./format_number";
 import { InputTblDetail } from "@/app/component/input_tbl_detail";
-import { Table } from "@/app/component/table";
+import clsx from "clsx";
 import { LinkImage } from "@/app/component/link_image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +17,7 @@ interface detailDataBukuProyek {
   nilai_pekerjaan: string;
 }
 
-export function JudulPage({ id }: { id: number }) {
+export function JudulPage({ id }: { id: string }) {
   const [data, setData] = useState<detailDataBukuProyek[]>([]);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function JudulPage({ id }: { id: number }) {
 }
 
 // INPUT
-export function InputTabelProyekDetail({ id }: { id: number }) {
+export function InputTabelProyekDetail({ id }: { id: string }) {
   const [data, setData] = useState<detailDataBukuProyek[]>([]);
 
   useEffect(() => {
@@ -122,9 +122,16 @@ interface TbnbWithGrandTotal extends TabelBarangNilaiBelanja {
   grandTotal: number;
 }
 
-export function TabelProyekDetail2({ id }: { id: number }) {
+export function TabelProyekDetail2({ id }: { id: string }) {
   const [data, setData] = useState<TabelBarangNilaiBelanja[]>([]);
-  const [Total, setTotal] = useState("");
+  const [TotKbKas, setTotKbKas] = useState("");
+  const [TotUpah, setTotUpah] = useState("");
+  const [TotMaCil, setTotMaCil] = useState("");
+  const [TotMaSar, setTotMaSar] = useState("");
+  const [TotNonMa, setTotNonMa] = useState("");
+  const [TotDircost, setTotDircost] = useState("");
+  const [TotDebit, setTotDebit] = useState("");
+  const [GrandTot, setGrandTot] = useState("");
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/detail_jasa/${id}`) // endpoint dari Laravel
       .then((res) => res.json())
@@ -132,35 +139,12 @@ export function TabelProyekDetail2({ id }: { id: number }) {
       .catch((err) => console.error(err));
   }, [id]);
 
-  useEffect(() => {
-    let operasi = 0;
-    for (let index = 0; index < data.length; index++) {
-      operasi += Number(data[index].debit); // pastikan dikonversi ke number
-    }
-    setTotal(String(operasi));
-    console.log(operasi);
-  }, [data]);
-
-  const dataTh = [
-    "No",
-    "Tanggal",
-    "Uraian",
-    "Kb Kas",
-    "Material\nKas Kecil",
-    "Material\nKas Besar",
-    "Non\nMaterial",
-    "Dircost",
-    "Jumlah",
-    "Grand\nTotal",
-  ];
-
   // Hitung grand_total secara berurutan
   const dataWithGrandTotal = data.reduce<TbnbWithGrandTotal[]>(
     (acc, current, index) => {
       const debit = Number(current.debit) || 0;
       const prevGrandTotal = index > 0 ? acc[index - 1].grand_total : 0;
       const grandTotal = prevGrandTotal + debit;
-
       acc.push({
         ...current,
         grandTotal, // tambahkan field baru
@@ -171,28 +155,108 @@ export function TabelProyekDetail2({ id }: { id: number }) {
     []
   );
 
-  const dataTd = dataWithGrandTotal.map((row, index) => [
-    index + 1,
-    row.tanggal,
-    row.uraian,
-    "Rp." + FormatNumber(row.kb_kas),
-    "Rp." + FormatNumber(row.material_kaskecil),
-    "Rp." + FormatNumber(row.material_kasbesar),
-    "Rp." + FormatNumber(row.non_material),
-    "Rp." + FormatNumber(row.dircost),
-    "Rp." + FormatNumber(row.debit),
-    "Rp." + FormatNumber(row.grandTotal),
-  ]);
+  useEffect(() => {
+    if (dataWithGrandTotal.length > 0) {
+      const lastGrandTotal =
+        dataWithGrandTotal[dataWithGrandTotal.length - 1].grandTotal;
+      setGrandTot(String(lastGrandTotal));
+    }
+  }, [dataWithGrandTotal]);
+
+  useEffect(() => {
+    let operasi1 = 0;
+    let operasi2 = 0;
+    let operasi3 = 0;
+    let operasi4 = 0;
+    let operasi5 = 0;
+    let operasi6 = 0;
+    let operasi7 = 0;
+    for (let index = 0; index < data.length; index++) {
+      operasi1 += Number(data[index].kb_kas); // pastikan dikonversi ke number
+      operasi2 += Number(data[index].upah); // pastikan dikonversi ke number
+      operasi3 += Number(data[index].material_kaskecil); // pastikan dikonversi ke number
+      operasi4 += Number(data[index].material_kasbesar); // pastikan dikonversi ke number
+      operasi5 += Number(data[index].non_material); // pastikan dikonversi ke number
+      operasi6 += Number(data[index].dircost); // pastikan dikonversi ke number
+      operasi7 += Number(data[index].debit); // pastikan dikonversi ke number
+    }
+    setTotKbKas(String(operasi1));
+    setTotUpah(String(operasi2));
+    setTotMaCil(String(operasi3));
+    setTotMaSar(String(operasi4));
+    setTotNonMa(String(operasi5));
+    setTotDircost(String(operasi6));
+    setTotDebit(String(operasi7));
+  }, [data]); // tambahkan dependency jika `data` berasal dari state
 
   return (
-    <Table
-      dataTd={dataTd}
-      dataTh={dataTh}
-      source="total"
-      fieldNameRow="Total Jumlah"
-      classTotal="pr-20 min-[1450px]:pr-[110px] min-[1700px]:pr-[130px]"
-      dataTotal={"Rp." + FormatNumber(Number(Total))}
-    ></Table>
+    <div className="bg-white p-2">
+      <table className="w-full text-center bg-white text-black">
+        <thead>
+          <tr className="shadow-xl">
+            <th className="pb-2 whitespace-pre-wrap ">No</th>
+            <th className="pb-2 whitespace-pre-wrap ">Tanggal</th>
+            <th className="pb-2 whitespace-pre-wrap ">Uraian</th>
+            <th className="pb-2 whitespace-pre-wrap ">Kb Kas</th>
+            <th className="pb-2 whitespace-pre-wrap ">Upah</th>
+            <th className="pb-2 whitespace-pre-wrap ">
+              Material <br /> Kas Kecil
+            </th>
+            <th className="pb-2 whitespace-pre-wrap ">
+              Material <br /> Kas Besar
+            </th>
+            <th className="pb-2 whitespace-pre-wrap ">
+              Non <br /> Material
+            </th>
+            <th className="pb-2 whitespace-pre-wrap ">Dircost</th>
+            <th className="pb-2 whitespace-pre-wrap ">Jumlah</th>
+            <th className="pb-2 whitespace-pre-wrap ">
+              Grand <br />
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {dataWithGrandTotal.map((row, index) => (
+            <tr key={row.id} className="border-b-1 border-gray-400">
+              <td className="py-2">{index + 1}</td>
+              <td className="py-2">{row.tanggal}</td>
+              <td className="py-2">{row.uraian}</td>
+              <td className="py-2">Rp.{FormatNumber(row.kb_kas)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.upah)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.material_kaskecil)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.material_kasbesar)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.non_material)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.dircost)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.debit)}</td>
+              <td className="py-2">Rp.{FormatNumber(row.grandTotal)}</td>
+            </tr>
+          ))}
+          <tr>
+            <td colSpan={2} className={clsx("py-2 text-right font-bold")}>
+              Total
+            </td>
+            <td className="py-2 text-right">:</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotKbKas))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotUpah))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotMaCil))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotMaSar))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotNonMa))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotDircost))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(TotDebit))}</td>
+            <td className="py-2">Rp.{FormatNumber(Number(GrandTot))}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    // <Table
+    //   dataTd={dataTd}
+    //   dataTh={dataTh}
+    //   source="total"
+    //   fieldNameRow="Total Jumlah"
+    //   classTotal="pr-20 min-[1450px]:pr-[110px] min-[1700px]:pr-[130px]"
+    //   dataTotal={"Rp." + FormatNumber(Number(Total))}
+    // ></Table>
   );
 }
 
@@ -202,7 +266,7 @@ interface TabelBarangNotaBelanja {
   nota: string;
 }
 
-export function LinkImageProyekDetail({ id }: { id: number }) {
+export function LinkImageProyekDetail({ id }: { id: string }) {
   const [data, setData] = useState<TabelBarangNotaBelanja[]>([]);
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bkk/detail_jasa/${id}`) // endpoint dari Laravel
@@ -226,7 +290,7 @@ export function LinkImageProyekDetail({ id }: { id: number }) {
   );
 }
 
-export function LinkUbahDataProyek({ id }: { id: number }) {
+export function LinkUbahDataProyek({ id }: { id: string }) {
   return (
     <Link
       href={`ubah_data?id_bpj=${id}`}
