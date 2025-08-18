@@ -197,12 +197,7 @@ export default function Page() {
                   <span className="ml-1">Uang Masuk</span>
                 </button>
               </Link>
-              <div>
-                <input
-                  type="checkbox"
-                  id="dropdown-link"
-                  className="peer hidden"
-                />
+              <div className="group">
                 <label htmlFor="dropdown-link">
                   <div className="select-none flex items-center gap-x-2 cursor-pointer px-3 py-1 bg-[#FF3535] rounded-lg text-gray-700 font-medium">
                     <FontAwesomeIcon icon={faPrint} className="w-5" />
@@ -212,10 +207,11 @@ export default function Page() {
                       alt=""
                       width={20}
                       height={20}
+                      className="group-hover:rotate-[-90deg] transition duration-75"
                     ></Image>
                   </div>
                 </label>
-                <div className="hidden peer-checked:flex flex-col absolute z-50">
+                <div className="rotate-x-[90deg] translate-y-[-50px] group-hover:rotate-x-0 group-hover:translate-y-0 transition duration-75 flex flex-col absolute z-50">
                   <Link
                     href={"buku_kas_kecil/uang_keluar/buku_kantor"}
                     className="px-6 py-2 bg-black/90 hover:bg-green-400"

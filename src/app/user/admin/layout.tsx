@@ -111,8 +111,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <li>
               <Link href={"/user/admin/buku_kas_kecil"}>Buku Kas Kecil</Link>
             </li>
-            <li>
-              <input type="checkbox" id="navbar-down" className="peer hidden" />
+            <li className="group">
               <label
                 htmlFor="navbar-down"
                 className="flex items-center cursor-pointer select-none"
@@ -123,10 +122,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   height={17}
                   src={"/assets/dropdown.png"}
                   alt="dropdown"
-                  className="w-[17px] h-[12px] ml-[6px]"
+                  className="w-[17px] h-[12px] ml-[6px] group-hover:rotate-[-90deg] transition duration-75"
                 ></Image>
               </label>
-              <div className="hidden peer-checked:flex flex-col absolute z-50 bg-white text-black">
+              <div className="rotate-x-[90deg] translate-y-[-50px] group-hover:rotate-x-0 group-hover:translate-y-0 transition duration-75 flex flex-col absolute z-50 bg-white text-black">
                 <Link
                   href={"/user/admin/buku_kantor"}
                   className="px-5 py-2 hover:bg-black hover:text-white"
