@@ -4,7 +4,7 @@ import FormBkkJasa from "@/app/ui/admin/buku_kas_kecil/uang_keluar/form_proyekJa
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { FormatNumber } from "@/app/component/format_number";
+import { FormatNumber, FormatPrice } from "@/app/component/format_number";
 import { SelectPostJasa } from "@/app/component/SelectPost";
 
 export default function Page() {
@@ -22,11 +22,17 @@ export default function Page() {
   const [Pekerjaan, setPekerjaan] = useState("");
   const [Uraian, setUraian] = useState("");
   const [Kb_kas, setKb_kas] = useState("");
+  const [FormatKb_kas, setFormatKb_kas] = useState("0");
   const [Upah, setUpah] = useState("");
+  const [FormatUpah, setFormatUpah] = useState("0");
   const [Material_kaskecil, setMaterial_kaskecil] = useState("");
+  const [FormatMaterial_kaskecil, setFormatMaterial_kaskecil] = useState("0");
   const [Material_kasbesar, setMaterial_kasbesar] = useState("");
+  const [FormatMaterial_kasbesar, setFormatMaterial_kasbesar] = useState("0");
   const [Non_material, setNon_material] = useState("");
+  const [FormatNon_material, setFormatNon_material] = useState("0");
   const [Dircost, setDircost] = useState("");
+  const [FormatDircost, setFormatDircost] = useState("0");
   const [Nota, setNota] = useState<File | null>(null);
   const [Debit, setDebit] = useState("");
   const [FormatDebit, setFormatDebit] = useState("");
@@ -102,6 +108,106 @@ export default function Page() {
     }
   };
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedKbKas = FormatKb_kas.replace(/\./g, "");
+    setKb_kas(cleanedKbKas);
+  }, [FormatKb_kas]);
+  useEffect(() => {
+    const cleanedUpah = FormatUpah.replace(/\./g, "");
+    setUpah(cleanedUpah);
+  }, [FormatUpah]);
+  useEffect(() => {
+    const cleanedMaterialKasKecil = FormatMaterial_kaskecil.replace(/\./g, "");
+    setMaterial_kaskecil(cleanedMaterialKasKecil);
+  }, [FormatMaterial_kaskecil]);
+  useEffect(() => {
+    const cleanedMaterialKasBesar = FormatMaterial_kasbesar.replace(/\./g, "");
+    setMaterial_kasbesar(cleanedMaterialKasBesar);
+  }, [FormatMaterial_kasbesar]);
+  useEffect(() => {
+    const cleanedNonMaterial = FormatNon_material.replace(/\./g, "");
+    setNon_material(cleanedNonMaterial);
+  }, [FormatNon_material]);
+  useEffect(() => {
+    const cleanedDircost = FormatDircost.replace(/\./g, "");
+    setDircost(cleanedDircost);
+  }, [FormatDircost]);
+
+  const handleInputChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatKb_kas(formattedValue);
+  };
+  const handleInputChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatUpah(formattedValue);
+  };
+  const handleInputChange3 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatMaterial_kaskecil(formattedValue);
+  };
+  const handleInputChange4 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatNon_material(formattedValue);
+  };
+  const handleInputChange5 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatMaterial_kasbesar(formattedValue);
+  };
+  const handleInputChange6 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatDircost(formattedValue);
+  };
+
+  console.log("tipe rupiah 1 Format = ", FormatKb_kas);
+  console.log("tipe rupiah 1 Non Format = ", Kb_kas);
+  console.log("tipe rupiah 2 Format = ", FormatUpah);
+  console.log("tipe rupiah 2 Non Format = ", Upah);
+  console.log("tipe rupiah 3 Format = ", FormatMaterial_kaskecil);
+  console.log("tipe rupiah 3 Non Format = ", Material_kaskecil);
+  console.log("tipe rupiah 4 Format = ", FormatMaterial_kasbesar);
+  console.log("tipe rupiah 4 Non Format = ", Material_kasbesar);
+  console.log("tipe rupiah 5 Format = ", FormatNon_material);
+  console.log("tipe rupiah 5 Non Format = ", Non_material);
+  console.log("tipe rupiah 6 Format = ", FormatDircost);
+  console.log("tipe rupiah 6 Non Format = ", Dircost);
+
   return (
     <FormBkkJasa onSubmit={handleSubmit} encType="multipart/form-data">
       <InputTbl
@@ -129,49 +235,43 @@ export default function Page() {
       ></SelectPostJasa>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Kb_kas}
-        onChange={(e) => setKb_kas(e.target.value)}
+        value={FormatKb_kas}
+        onChange={handleInputChange1}
       >
         Kb Kas
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Upah}
-        onChange={(e) => setUpah(e.target.value)}
+        value={FormatUpah}
+        onChange={handleInputChange2}
       >
         Upah
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Material_kaskecil}
-        onChange={(e) => setMaterial_kaskecil(e.target.value)}
+        value={FormatMaterial_kaskecil}
+        onChange={handleInputChange3}
       >
         Material Kas Kecil
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Non_material}
-        onChange={(e) => setNon_material(e.target.value)}
+        value={FormatNon_material}
+        onChange={handleInputChange4}
       >
         Non Material
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Material_kasbesar}
-        onChange={(e) => setMaterial_kasbesar(e.target.value)}
+        value={FormatMaterial_kasbesar}
+        onChange={handleInputChange5}
       >
         Material Kas Besar
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        type="number"
-        value={Dircost}
-        onChange={(e) => setDircost(e.target.value)}
+        value={FormatDircost}
+        onChange={handleInputChange6}
       >
         Dircost
       </InputTbl>

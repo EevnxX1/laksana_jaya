@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
+import { FormatNumber, FormatPrice } from "@/app/component/format_number";
 
 export default function Page() {
   const [Idbpbarang, setIdbpbarang] = useState("");
@@ -13,7 +14,9 @@ export default function Page() {
   const [Volume, setVolume] = useState("");
   const [Satuan, setSatuan] = useState("");
   const [HargaSatuan, setHargaSatuan] = useState("");
+  const [FormatHargaSatuan, setFormatHargaSatuan] = useState("");
   const [HargaTotal, setHargaTotal] = useState("");
+  const [FormatHargaTotal, setFormatHargaTotal] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function Page() {
   useEffect(() => {
     const total = Number(HargaSatuan) * Number(Volume);
     setHargaTotal(total.toString());
+    setFormatHargaTotal(FormatNumber(total));
   }, [HargaSatuan, Volume]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +68,24 @@ export default function Page() {
       toast.error("Terjadi error saat submit");
     }
   };
+
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedHargaSatuan = FormatHargaSatuan.replace(/\./g, "");
+    setHargaSatuan(cleanedHargaSatuan);
+  }, [FormatHargaSatuan]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatHargaSatuan(formattedValue);
+  };
+
   return (
     <TambahBarang onSubmit={handleSubmit}>
       <InputTbl
@@ -104,14 +126,14 @@ export default function Page() {
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        value={HargaSatuan}
-        onChange={(e) => setHargaSatuan(e.target.value)}
+        value={FormatHargaSatuan}
+        onChange={handleInputChange}
       >
         Harga Satuan
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        value={HargaTotal}
+        value={FormatHargaTotal}
         onChange={(e) => setHargaTotal(e.target.value)}
       >
         Harga Total

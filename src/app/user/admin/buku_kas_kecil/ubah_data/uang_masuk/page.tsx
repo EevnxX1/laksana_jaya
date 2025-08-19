@@ -4,6 +4,7 @@ import FormBkkUbahData from "@/app/ui/admin/buku_kas_kecil/ubah_data/form_ubahDa
 import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { FormatNumber, FormatPrice } from "@/app/component/format_number";
 
 interface IsivalueUangMasuk {
   tanggal: string;
@@ -34,6 +35,7 @@ export default function Page() {
   const [Nota, setNota] = useState("");
   const [Debit, setDebit] = useState("0");
   const [Kredit, setKredit] = useState("");
+  const [FormatKredit, setFormatKredit] = useState("");
   const [Data, setData] = useState<IsivalueUangMasuk[]>([]);
   const router = useRouter();
 
@@ -53,6 +55,7 @@ export default function Page() {
       setTanggal(proyek.tanggal);
       setUraian(proyek.uraian);
       setKredit(proyek.kredit);
+      setFormatKredit(FormatNumber(Number(proyek.kredit)));
     }
   }, [Data]);
 
@@ -124,6 +127,23 @@ export default function Page() {
       console.error(error);
       toast.error("Terjadi error saat submit");
     }
+  };
+
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedKredit = FormatKredit.replace(/\./g, "");
+    setKredit(cleanedKredit);
+  }, [FormatKredit]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatKredit(formattedValue);
   };
 
   return (
@@ -227,8 +247,8 @@ export default function Page() {
       </InputTbl>
       <InputTbl
         classPage="mb-7"
-        value={Kredit}
-        onChange={(e) => setKredit(e.target.value)}
+        value={FormatKredit}
+        onChange={handleInputChange}
       >
         Uang Masuk
       </InputTbl>

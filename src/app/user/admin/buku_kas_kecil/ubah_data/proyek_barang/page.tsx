@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SelectPostBarangEdit } from "@/app/component/SelectPost";
+import { FormatNumber, FormatPrice } from "@/app/component/format_number";
 
 interface IsiValueBukuBarang {
   id: number;
@@ -47,10 +48,13 @@ export default function Page() {
   const [Nota, setNota] = useState<File | null>(null);
   const [Gambar, setGambar] = useState("");
   const [Debit, setDebit] = useState("");
+  const [FormatDebit, setFormatDebit] = useState("");
+  const [FormatHargaSatuan, setFormatHargaSatuan] = useState("");
 
   useEffect(() => {
     const total = Number(Harga_satuan) * Number(Volume);
     setDebit(total.toString());
+    setFormatDebit(FormatNumber(total));
   }, [Harga_satuan, Volume]);
 
   useEffect(() => {
@@ -74,6 +78,7 @@ export default function Page() {
       setTanggal(proyek.tanggal);
       setUraian(proyek.uraian);
       setHarga_satuan(proyek.harga_satuan);
+      setFormatHargaSatuan(FormatNumber(Number(proyek.harga_satuan)));
       setVolume(proyek.volume);
       setSatuan(proyek.satuan);
       setGambar(proyek.nota);
@@ -136,6 +141,23 @@ export default function Page() {
     }
   };
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedHargaSatuan = FormatHargaSatuan.replace(/\./g, "");
+    setHarga_satuan(cleanedHargaSatuan);
+  }, [FormatHargaSatuan]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatHargaSatuan(formattedValue);
+  };
+
   return (
     <FormBkkUbahData
       judul="BUKU KAS KECIL - UBAH BUKU BARANG"
@@ -169,8 +191,8 @@ export default function Page() {
       <InputTbl
         classPage="mb-7"
         type="text"
-        value={Harga_satuan}
-        onChange={(e) => setHarga_satuan(e.target.value)}
+        value={FormatHargaSatuan}
+        onChange={handleInputChange}
       >
         Harga Satuan
       </InputTbl>
@@ -255,7 +277,7 @@ export default function Page() {
       <InputTbl
         classPage="mb-7"
         type="text"
-        value={Debit}
+        value={FormatDebit}
         onChange={(e) => setDebit(e.target.value)}
         readOnly
       >

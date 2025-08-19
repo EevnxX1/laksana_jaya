@@ -5,6 +5,7 @@ import { InputTbl } from "@/app/component/input_tbl";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FormatNumber, FormatPrice } from "@/app/component/format_number";
 
 interface IsiValueBukuKantor {
   id: number;
@@ -40,6 +41,7 @@ export default function Page() {
   const [Nota, setNota] = useState<File | null>(null);
   const [Gambar, setGambar] = useState("");
   const [Debit, setDebit] = useState("");
+  const [FormatDebit, setFormatDebit] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -57,6 +59,7 @@ export default function Page() {
       setTanggal(proyek.tanggal);
       setUraian(proyek.uraian);
       setDebit(proyek.debit);
+      setFormatDebit(FormatNumber(Number(proyek.debit)));
       setGambar(proyek.nota);
     }
   }, [Data]);
@@ -112,6 +115,23 @@ export default function Page() {
     }
   };
 
+  // HILANGKAN TITIK DI SINI UNTUK NILAI ASLI
+  useEffect(() => {
+    const cleanedDebit = FormatDebit.replace(/\./g, "");
+    setDebit(cleanedDebit);
+  }, [FormatDebit]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ambil nilai dari input saat ini
+    const rawValue = event.target.value;
+
+    // Bersihkan nilai dari titik, lalu format ulang
+    const formattedValue = FormatPrice(rawValue);
+
+    // Update state dengan nilai yang sudah diformat
+    setFormatDebit(formattedValue);
+  };
+
   return (
     <FormBkkUbahData
       onSubmit={handleSubmit}
@@ -156,8 +176,8 @@ export default function Page() {
       <InputTbl
         classPage="mb-7"
         type="text"
-        value={Debit}
-        onChange={(e) => setDebit(e.target.value)}
+        value={FormatDebit}
+        onChange={handleInputChange}
       >
         Nilai Uang Keluar
       </InputTbl>
