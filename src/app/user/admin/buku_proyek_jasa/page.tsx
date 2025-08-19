@@ -4,9 +4,9 @@ import TabelBukuProyekJasa from "@/app/ui/admin/buku_proyek_jasa/tbl_bpj";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPrint,
   faCircleXmark,
   faCircleInfo,
+  faFolderPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -127,7 +127,7 @@ export default function Page() {
               className="h-fit self-end"
             >
               <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
-                <FontAwesomeIcon icon={faPrint} className="w-5" />
+                <FontAwesomeIcon icon={faFolderPlus} className="w-5" />
                 <span className="ml-1">Tambah Proyek</span>
               </button>
             </Link>
