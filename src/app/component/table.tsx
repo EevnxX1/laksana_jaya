@@ -45,7 +45,7 @@ export function Table({
             ))}
             <tr>
               <td
-                colSpan={dataTh.length - 2}
+                colSpan={dataTh.length - 1}
                 className={clsx("py-2 text-right font-bold", classTotal)}
               >
                 {fieldNameRow}

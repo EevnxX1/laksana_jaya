@@ -8,6 +8,7 @@ import {
   LinkImageProyekDetail,
   LinkAddRekening,
   LinkUbahDataProyek,
+  LinkCetakData,
 } from "@/app/component/detail_barang";
 
 export default function Page() {
@@ -26,7 +27,8 @@ export default function Page() {
       </h1>
       <span className="border border-[#D4D4D4] w-full block mb-5"></span>
       <InputTabelProyekDetail id={String(id)} />
-      <div className="w-full flex justify-end mt-5">
+      <div className="w-full flex justify-end mt-5 gap-x-4">
+        <LinkCetakData id={String(id)} />
         <LinkUbahDataProyek id={String(id)} />
       </div>
       <div className="mt-10 flex flex-col gap-y-5 mb-10">

@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { LinkImage } from "@/app/component/link_image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faPrint,
   faPen,
   faCircleXmark,
   faFolderPlus,
@@ -449,6 +450,19 @@ export function LinkUbahDataProyek({ id }: { id: string }) {
     >
       <FontAwesomeIcon icon={faPen} className="w-4" />
       <p className="font-semibold">Edit Data Proyek</p>
+    </Link>
+  );
+}
+
+export function LinkCetakData({ id }: { id: string }) {
+  return (
+    <Link
+      href={`/cetak_barang?id=${id}`}
+      className="flex items-center px-5 py-2 rounded-lg gap-x-2 bg-[#F0FF66] text-black self-end w-fit"
+      target="_blank"
+    >
+      <FontAwesomeIcon icon={faPrint} className="w-4" />
+      <p className="font-semibold">Cetak Data</p>
     </Link>
   );
 }
