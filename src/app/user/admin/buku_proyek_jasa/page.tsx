@@ -4,9 +4,9 @@ import TabelBukuProyekJasa from "@/app/ui/admin/buku_proyek_jasa/tbl_bpj";
 import { Table } from "@/app/component/table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPenToSquare,
   faPrint,
   faCircleXmark,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -79,7 +79,7 @@ export default function Page() {
         href={`buku_proyek_jasa/detail?id_bp=${row.id}`}
         className={"text-green-800"}
       >
-        <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        <FontAwesomeIcon icon={faCircleInfo} className="w-8 text-2xl" />
       </Link>
       <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
       <button
@@ -106,7 +106,7 @@ export default function Page() {
         }}
         className={"text-red-800 cursor-pointer"}
       >
-        <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+        <FontAwesomeIcon icon={faCircleXmark} className="w-7 text-2xl" />
       </button>
     </div>,
   ]);

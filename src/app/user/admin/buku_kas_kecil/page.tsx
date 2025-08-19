@@ -7,6 +7,8 @@ import {
   faPenToSquare,
   faCircleXmark,
   faPrint,
+  faFolderPlus,
+  faFolderMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import Image from "next/image";
@@ -203,14 +205,14 @@ export default function Page() {
                 className="h-fit self-end"
               >
                 <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
-                  <FontAwesomeIcon icon={faPrint} className="w-5" />
+                  <FontAwesomeIcon icon={faFolderPlus} className="w-5" />
                   <span className="ml-1">Uang Masuk</span>
                 </button>
               </Link>
               <div className="group">
                 <label htmlFor="dropdown-link">
                   <div className="select-none flex items-center gap-x-2 cursor-pointer px-3 py-1 bg-[#FF3535] rounded-lg text-gray-700 font-medium">
-                    <FontAwesomeIcon icon={faPrint} className="w-5" />
+                    <FontAwesomeIcon icon={faFolderMinus} className="w-5" />
                     <span className="">Uang Keluar</span>
                     <Image
                       src={"/assets/dropdown.png"}

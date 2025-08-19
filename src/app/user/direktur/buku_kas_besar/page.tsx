@@ -7,6 +7,7 @@ import {
   faPenToSquare,
   faPrint,
   faCircleXmark,
+  faFolderPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { FormatNumber } from "@/app/component/format_number";
@@ -157,7 +158,7 @@ export default function Page() {
     <TabelBukuKasBesar>
       <div className="text-white mb-4 flex flex-col">
         <h1 className="font-bold text-2xl mb-3">Buku Kas Besar</h1>
-        <div className="flex justify-between mb-5">
+        <div className="flex justify-between mb-3">
           <SearchKeyword
             keyword={keyword}
             setKeyword={setKeyword}
@@ -173,16 +174,29 @@ export default function Page() {
             />
           </div>
         </div>
-        <Link
-          href={`/cetak_bkb?keyword=${keyword}&start_date=${startDate}&end_date=${endDate}`}
-          className="h-fit"
-          target="_blank"
-        >
-          <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
-            <FontAwesomeIcon icon={faPrint} className="w-5" />
-            <span className="ml-1">Cetak Transaksi</span>
-          </button>
-        </Link>
+        <div className="w-full flex justify-between items-center">
+          <Link
+            href={`/cetak_bkb?keyword=${keyword}&start_date=${startDate}&end_date=${endDate}`}
+            className="h-fit"
+            target="_blank"
+          >
+            <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
+              <FontAwesomeIcon icon={faPrint} className="w-5" />
+              <span className="ml-1">Cetak Transaksi</span>
+            </button>
+          </Link>
+          <div className="flex gap-x-5 mt-5">
+            <Link
+              href="/user/direktur/buku_kas_besar/uang_masuk"
+              className="h-fit self-end"
+            >
+              <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
+                <FontAwesomeIcon icon={faFolderPlus} className="w-5" />
+                <span className="ml-1">Tambah Transaksi</span>
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
       <div>
         <h1 className="font-bold text-xl mb-3 text-white">Data Transaksi</h1>

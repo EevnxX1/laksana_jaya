@@ -8,6 +8,7 @@ import {
   faPenToSquare,
   faCircleXmark,
   faPrint,
+  faFolderPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { SearchKeyword } from "@/app/component/SearchKeyword";
@@ -151,7 +152,7 @@ export default function Page() {
             className="h-fit self-end"
           >
             <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
-              <FontAwesomeIcon icon={faPrint} className="w-5" />
+              <FontAwesomeIcon icon={faFolderPlus} className="w-5" />
               <span className="ml-1">Tambah Instansi</span>
             </button>
           </Link>

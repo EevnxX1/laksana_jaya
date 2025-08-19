@@ -5,9 +5,9 @@ import { Table } from "@/app/component/table";
 import { SearchKeyword } from "@/app/component/SearchKeyword";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPenToSquare,
-  faPrint,
   faCircleXmark,
+  faFolderPlus,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -79,7 +79,7 @@ export default function Page() {
         href={`buku_proyek/detail?id_bp=${row.id}`}
         className={"text-green-800"}
       >
-        <FontAwesomeIcon icon={faPenToSquare} className="w-5" />
+        <FontAwesomeIcon icon={faCircleInfo} className="w-8 text-2xl" />
       </Link>
       <span className="border border-gray-500 mr-[6px] ml-[3px]"></span>
       <button
@@ -106,7 +106,7 @@ export default function Page() {
         }}
         className={"text-red-800 cursor-pointer"}
       >
-        <FontAwesomeIcon icon={faCircleXmark} className="w-5" />
+        <FontAwesomeIcon icon={faCircleXmark} className="w-7 text-2xl" />
       </button>
     </div>,
   ]);
@@ -124,7 +124,7 @@ export default function Page() {
           <div className="flex gap-x-5">
             <Link href={"buku_proyek/tambah_data"} className="h-fit self-end">
               <button className="flex items-center cursor-pointer px-3 py-1 bg-[#9EFF66] rounded-lg text-gray-700 font-medium">
-                <FontAwesomeIcon icon={faPrint} className="w-5" />
+                <FontAwesomeIcon icon={faFolderPlus} className="w-5" />
                 <span className="ml-1">Tambah Proyek</span>
               </button>
             </Link>
