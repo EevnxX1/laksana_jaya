@@ -194,7 +194,7 @@ export function InputTabelProyekDetail({ id }: { id: string }) {
         onChange={(e) => setKeuntungan(e.target.value)}
         readOnly
       >
-        Keuntungan
+        Laba Rugi
       </InputTblDetail>
     </form>
   );

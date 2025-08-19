@@ -92,7 +92,6 @@ export default function PrintPage() {
       } finally {
         setLoading(false);
       }
-
     };
 
     fetchDataAndPrint();
@@ -107,9 +106,8 @@ export default function PrintPage() {
   const [MulaiPelaksanaan, setMulaiPelaksanaan] = useState("");
   const [SelesaiPelaksanaan, setSelesaiPelaksanaan] = useState("");
   const [NilaiPekerjaan, setNilaiPekerjaan] = useState("");
-    const [Keuntungan, setKeuntungan] = useState("");
+  const [Keuntungan, setKeuntungan] = useState("");
 
-  
   useEffect(() => {
     const proyek = BarangData[0];
     if (proyek) {
@@ -123,7 +121,6 @@ export default function PrintPage() {
   }, [BarangData]);
   // Detail Barang
 
-
   // Rekening Dan Barang Dpa
   const [Total, setTotal] = useState("");
 
@@ -134,13 +131,13 @@ export default function PrintPage() {
     }
     setTotal(String(operasi));
     console.log(operasi);
-  }, [BarangDpaData]);   
-  // Rekening Dan Barang Dpa   
+  }, [BarangDpaData]);
+  // Rekening Dan Barang Dpa
 
   // Data Barang Bkk
   const [TotalBkk, setTotalBkk] = useState("");
 
-     useEffect(() => {
+  useEffect(() => {
     let operasi = 0;
     for (let index = 0; index < BkkData.length; index++) {
       operasi += Number(BkkData[index].debit); // pastikan dikonversi ke number
@@ -148,7 +145,7 @@ export default function PrintPage() {
     setTotalBkk(FormatNumber(operasi));
     console.log(operasi);
   }, [BkkData]);
-  // Data Barang Bkk   
+  // Data Barang Bkk
 
   useEffect(() => {
     let operasi1 = 0;
@@ -166,9 +163,9 @@ export default function PrintPage() {
   // Gunakan useEffect ini untuk memunculkan dialog print setelah data dimuat
   useEffect(() => {
     // Pastikan data sudah ada dan tidak dalam proses loading
-        if (namaPekerjaan && !loading) {
-            window.print();
-        }
+    if (namaPekerjaan && !loading) {
+      window.print();
+    }
   }, [namaPekerjaan, loading]);
 
   const dataTh = [
@@ -200,107 +197,109 @@ export default function PrintPage() {
           <span className="flex justify-between w-full">
             <h1>Nama Pekerjaan</h1>
             <div className="w-[400px]">
-            <p>: {namaPekerjaan}</p>
+              <p>: {namaPekerjaan}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Instansi</h1>
             <div className="w-[400px]">
-            <p>: {Instansi}</p>
+              <p>: {Instansi}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Sub Kegiatan</h1>
             <div className="w-[400px]">
-            <p>: {SubKegiatan}</p>
+              <p>: {SubKegiatan}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Mulai Pelaksanaan</h1>
             <div className="w-[400px]">
-            <p>: {MulaiPelaksanaan}</p>
+              <p>: {MulaiPelaksanaan}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Selesai Pelaksanaan</h1>
             <div className="w-[400px]">
-            <p>: {SelesaiPelaksanaan}</p>
+              <p>: {SelesaiPelaksanaan}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Nilai Pekerjaan</h1>
             <div className="w-[400px]">
-            <p>: {NilaiPekerjaan}</p>
+              <p>: {NilaiPekerjaan}</p>
             </div>
           </span>
           <span className="flex justify-between w-full">
             <h1>Laba Rugi</h1>
             <div className="w-[400px]">
-            <p>: {Keuntungan}</p>
+              <p>: {Keuntungan}</p>
             </div>
           </span>
         </div>
-        <div className="border-1 border-gray-400 px-1 rounded-lg">
-            <table className="w-full text-center bg-white text-black">
-      <thead>
-        <tr className="border-b-1 border-gray-400">
-          <th className={"pb-2 py-2 w-[50px]"}>No</th>
-          <th className={"pb-2 py-2"}>Nama Barang</th>
-          <th className={"pb-2 py-2"}>Spesifikasi</th>
-          <th className={"pb-2 py-2"}>Vol</th>
-          <th className={"pb-2 py-2"}>Satuan</th>
-          <th className={"pb-2 py-2"}>Harga Satuan</th>
-          <th className={"pb-2 py-2"}>Harga Total</th>
-        </tr>
-      </thead>
-      {RekeningData.map((kredit, ikredit) => (
-        <tbody key={ikredit}>
-          <tr className="border-b-1 border-gray-400">
-            <th colSpan={7} className="text-start pl-1 py-2">
-              <div className="flex gap-x-2">
-                <span>{kredit.no_rekening}</span>
-                <span>{kredit.ket}</span>
-              </div>
-            </th>
-          </tr>
-          {BarangDpaData.map((barang, ibarang) => [
-            barang.id_kdrekening == kredit.id ? (
-              <tr key={ibarang} className="border-b-1 border-gray-400">
-                <td className={"py-4"}>{ibarang + 1}</td>
-                <td className={"py-4"}>{barang.nama_barang}</td>
-                <td className={"py-4"}>{barang.spesifikasi}</td>
-                <td className={"py-4"}>{barang.vol}</td>
-                <td className={"py-4"}>{barang.satuan}</td>
-                <td className={"py-4"}>
-                  Rp.{FormatNumber(Number(barang.harga_satuan))}
-                </td>
-                <td className={"py-4"}>
-                  Rp.{FormatNumber(Number(barang.harga_total))}
-                </td>
+        <div className="px-1 rounded-lg">
+          <h1>TABEL PEKERJAAN - NILAI PAGU</h1>
+          <table className="w-full text-center bg-white text-black">
+            <thead>
+              <tr className="shadow-xl/15">
+                <th className={"pb-2 py-2 w-[50px]"}>No</th>
+                <th className={"pb-2 py-2"}>Nama Barang</th>
+                <th className={"pb-2 py-2"}>Spesifikasi</th>
+                <th className={"pb-2 py-2"}>Vol</th>
+                <th className={"pb-2 py-2"}>Satuan</th>
+                <th className={"pb-2 py-2"}>Harga Satuan</th>
+                <th className={"pb-2 py-2"}>Harga Total</th>
               </tr>
-            ) : null,
-          ])}
-        </tbody>
-      ))}
-      <tfoot>
-        <tr>
-          <td colSpan={6} className={"py-2 text-right font-bold"}>
-            Total Jumlah
-          </td>
-          <td className="py-2">Rp.{FormatNumber(Number(Total))}</td>
-        </tr>
-      </tfoot>
-    </table>
+            </thead>
+            {RekeningData.map((kredit, ikredit) => (
+              <tbody key={ikredit}>
+                <tr className="border-b-1 border-gray-400">
+                  <th colSpan={7} className="text-start pl-1 py-2">
+                    <div className="flex gap-x-2">
+                      <span>{kredit.no_rekening}</span>
+                      <span>{kredit.ket}</span>
+                    </div>
+                  </th>
+                </tr>
+                {BarangDpaData.map((barang, ibarang) => [
+                  barang.id_kdrekening == kredit.id ? (
+                    <tr key={ibarang} className="border-b-1 border-gray-400">
+                      <td className={"py-4"}>{ibarang + 1}</td>
+                      <td className={"py-4"}>{barang.nama_barang}</td>
+                      <td className={"py-4"}>{barang.spesifikasi}</td>
+                      <td className={"py-4"}>{barang.vol}</td>
+                      <td className={"py-4"}>{barang.satuan}</td>
+                      <td className={"py-4"}>
+                        Rp.{FormatNumber(Number(barang.harga_satuan))}
+                      </td>
+                      <td className={"py-4"}>
+                        Rp.{FormatNumber(Number(barang.harga_total))}
+                      </td>
+                    </tr>
+                  ) : null,
+                ])}
+              </tbody>
+            ))}
+            <tfoot>
+              <tr>
+                <td colSpan={6} className={"py-2 text-right font-bold"}>
+                  Total Jumlah
+                </td>
+                <td className="py-2">Rp.{FormatNumber(Number(Total))}</td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
-        <div className="border-1 border-gray-400 px-1 rounded-lg">
-            <Table
-                  dataTd={dataTd}
-                  dataTh={dataTh}
-                  source="total"
-                  fieldNameRow="Total Jumlah"
-                  classTotal=""
-                  dataTotal={"Rp." + TotalBkk}
-            ></Table>
+        <div className="px-1 rounded-lg">
+          <h1>TABEL PEKERJAAN - NILAI BELANJA</h1>
+          <Table
+            dataTd={dataTd}
+            dataTh={dataTh}
+            source="total"
+            fieldNameRow="Total Jumlah"
+            classTotal=""
+            dataTotal={"Rp." + TotalBkk}
+          ></Table>
         </div>
       </div>
     </section>

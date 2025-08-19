@@ -22,7 +22,7 @@ export default function Login({ children }: formLogin) {
         ></Image>
         <p className="text-4xl">
           Selamat datang <br /> di{" "}
-          <span className="font-bold">CV LAKSAMANA JAYA</span>
+          <span className="font-bold">CV LAKSANA JAYA</span>
         </p>
         <a
           href=""

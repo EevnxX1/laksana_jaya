@@ -11,6 +11,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { SearchKeyword } from "@/app/component/SearchKeyword";
+import Image from "next/image";
+import clsx from "clsx";
 
 interface Instansi {
   id: number;
@@ -25,6 +27,8 @@ export default function Page() {
   const [Data, setData] = useState<Instansi[]>([]);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,6 +42,7 @@ export default function Page() {
       const response = await fetch(apiUrl);
       const data = await response.json();
       setData(data); // Update state dengan data hasil pencarian
+      setCurrentPage(1);
     } catch (error) {
       console.error("Gagal mengambil data:", error);
     } finally {
@@ -67,8 +72,15 @@ export default function Page() {
     "NPWP",
     "Action",
   ];
-  const dataTd = Data.map((list, index) => [
-    index + 1,
+
+  // --- Pagination logic ---
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = Data.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(Data.length / itemsPerPage);
+
+  const dataTd = currentItems.map((list, index) => [
+    indexOfFirstItem + index + 1,
     list.instansi,
     list.post,
     list.no_telp,
@@ -153,6 +165,48 @@ export default function Page() {
         ) : (
           <p>Tidak ada data ditemukan.</p>
         )}
+      </div>
+      <div className="flex self-center items-center bg-white text-black rounded-xl w-fit m-auto mt-5">
+        <button
+          className="w-12 h-10 flex justify-center cursor-pointer items-center disabled:opacity-50"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          <Image
+            src={"/assets/__.png"}
+            alt="arrow left"
+            width={50}
+            height={50}
+            className="w-3"
+          ></Image>
+        </button>
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            className={clsx(
+              "w-10 h-10 flex justify-center cursor-pointer items-center border border-[#C7C7C7]",
+              currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+            )}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            <p>{i + 1}</p>
+          </button>
+        ))}
+        <button
+          className="w-12 h-10 flex justify-center cursor-pointer items-center disabled:opacity-50"
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          <Image
+            src={"/assets/__.png"}
+            alt="arrow left"
+            width={50}
+            height={50}
+            className="w-3 rotate-180"
+          ></Image>
+        </button>
       </div>
     </TabelInstansi>
   );

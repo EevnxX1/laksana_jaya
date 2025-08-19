@@ -32,7 +32,7 @@ export default function Page() {
         <LinkUbahDataProyek id={String(id)} />
       </div>
       <div className="mt-10 flex flex-col gap-y-5 mb-10">
-        <h1 className="text-2xl font-semibold">TABLE PEKERJAAN - NILAI PAGU</h1>
+        <h1 className="text-2xl font-semibold">TABEL PEKERJAAN - NILAI PAGU</h1>
         <div className="flex">
           <LinkAddRekening id={String(id)} />
         </div>
@@ -41,7 +41,7 @@ export default function Page() {
       <span className="border border-[#D4D4D4] w-full block mb-10"></span>
       <div className="flex flex-col gap-y-5 mb-10">
         <h1 className="text-2xl font-semibold">
-          TABLE PEKERJAAN - NILAI BELANJA
+          TABEL PEKERJAAN - NILAI BELANJA
         </h1>
         <TabelProyekDetail2 id={String(id)} />
       </div>

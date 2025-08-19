@@ -6,6 +6,7 @@ import {
   TabelProyekDetail2,
   LinkImageProyekDetail,
   LinkUbahDataProyek,
+  LinkCetakData,
 } from "@/app/component/detail_jasa";
 
 export default function Page() {
@@ -23,7 +24,8 @@ export default function Page() {
       </h1>
       <span className="border border-[#D4D4D4] w-full block mb-5"></span>
       <InputTabelProyekDetail id={String(id)} />
-      <div className="w-full flex justify-end mt-5">
+      <div className="w-full flex justify-end mt-5 gap-x-5">
+        <LinkCetakData id={String(id)} />
         <LinkUbahDataProyek id={String(id)} />
       </div>
       <div className="flex flex-col gap-y-5 mb-10 mt-20">
